@@ -50,7 +50,35 @@ Apply the migration in `supabase/migrations/0001_init.sql` to a Supabase project
 the `handle_new_user` trigger that provisions a profile on signup, and the
 row-level-security policies.
 
-## Deployment
+## Deployment (Vercel)
 
-Deployed on Vercel. Set the two environment variables above in the Vercel
-project settings, then push to deploy.
+The recommended, reliable path is to import this GitHub repo into Vercel:
+
+1. Vercel → **Add New… → Project** → import the `idealfitness` repo.
+2. Select the branch `claude/gym-operations-hub-yvlsdx` (or merge it to `main` first).
+3. Framework preset: **Next.js** (auto-detected).
+4. Add the two Environment Variables (Production + Preview):
+
+   | Key | Value |
+   |-----|-------|
+   | `NEXT_PUBLIC_SUPABASE_URL` | `https://oknfnlucnnnzgxahtkrp.supabase.co` |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `sb_publishable_nbyLuTf1yM5AEp1_TRi9LA_CHsFKqm8` |
+
+5. **Deploy.** Every future push auto-deploys.
+
+> The anon/publishable key is safe to expose in the browser — access is enforced
+> by the row-level-security policies in the migration.
+
+## Demo accounts
+
+The database is seeded with three confirmed accounts (password **`Fitness123!`**):
+
+| Email | Role |
+|-------|------|
+| `alex@idealfitness.demo` | Trainer (has 2 clients, sessions, announcements) |
+| `amy@idealfitness.demo` | Client |
+| `ben@idealfitness.demo` | Client |
+
+New sign-ups: Supabase email confirmation is **on** by default. For open
+self-serve signup, turn off *Authentication → Providers → Email → "Confirm email"*
+in the Supabase dashboard so new users can log in immediately.
