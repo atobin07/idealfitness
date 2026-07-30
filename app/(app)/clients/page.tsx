@@ -27,7 +27,7 @@ export default async function ClientsPage() {
         <PageHeader title="Clients" subtitle={`${clients.length} on your roster.`} />
 
         <div className="card mb-6 p-5">
-          <h2 className="mb-1 font-semibold text-ink-900">Add a client</h2>
+          <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Add a client</h2>
           <p className="mb-3 text-sm text-slate-500">
             Enter the email they signed up with to add them to your roster.
           </p>
@@ -45,7 +45,7 @@ export default async function ClientsPage() {
                 <div className="flex items-center gap-3">
                   <Avatar name={c.full_name || "Client"} />
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-ink-900">{c.full_name || "Unnamed"}</p>
+                    <p className="truncate font-semibold text-ink-900 dark:text-white">{c.full_name || "Unnamed"}</p>
                     <p className="truncate text-sm text-slate-500">{c.email}</p>
                   </div>
                 </div>
@@ -75,7 +75,7 @@ export default async function ClientsPage() {
 
       {trainers.length === 0 ? (
         <div className="card mb-6 p-5">
-          <h2 className="mb-1 font-semibold text-ink-900">Connect with your trainer</h2>
+          <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Connect with your trainer</h2>
           <p className="mb-3 text-sm text-slate-500">
             Enter your trainer's email to send them a connection request.
           </p>
@@ -88,7 +88,7 @@ export default async function ClientsPage() {
               <div className="flex items-center gap-3">
                 <Avatar name={t.full_name || "Trainer"} size="lg" />
                 <div className="min-w-0">
-                  <p className="truncate text-lg font-semibold text-ink-900">{t.full_name}</p>
+                  <p className="truncate text-lg font-semibold text-ink-900 dark:text-white">{t.full_name}</p>
                   <p className="truncate text-sm text-slate-500">{t.email}</p>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export default async function AnnouncementsPage() {
 
       {isTrainer && (
         <div className="card mb-6 p-5">
-          <h2 className="mb-3 font-semibold text-ink-900">Post an announcement</h2>
+          <h2 className="mb-3 font-semibold text-ink-900 dark:text-white">Post an announcement</h2>
           <NewAnnouncementForm />
         </div>
       )}
@@ -45,7 +45,7 @@ export default async function AnnouncementsPage() {
               <div className="flex items-center gap-3">
                 <Avatar name={a.author?.full_name || "Gym"} size="sm" />
                 <div>
-                  <p className="font-semibold text-ink-900">{a.title}</p>
+                  <p className="font-semibold text-ink-900 dark:text-white">{a.title}</p>
                   <p className="text-xs text-slate-500">
                     {a.author?.full_name || "Staff"} ·{" "}
                     {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
@@ -61,7 +61,7 @@ export default async function AnnouncementsPage() {
                 </form>
               )}
             </div>
-            <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700">{a.body}</p>
+            <p className="mt-3 whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">{a.body}</p>
           </div>
         ))}
       </div>

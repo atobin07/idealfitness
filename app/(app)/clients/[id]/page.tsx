@@ -56,7 +56,7 @@ export default async function ClientDetailPage({
 
   return (
     <>
-      <Link href="/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-ink-900">
+      <Link href="/clients" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-ink-900 dark:text-white">
         ← Back to clients
       </Link>
 
@@ -79,26 +79,26 @@ export default async function ClientDetailPage({
         <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-4">
           <div>
             <p className="text-xs uppercase text-slate-400">Phone</p>
-            <p className="text-sm font-medium text-ink-900">{c.phone || "—"}</p>
+            <p className="text-sm font-medium text-ink-900 dark:text-white">{c.phone || "—"}</p>
           </div>
           <div className="col-span-1 sm:col-span-3">
             <p className="text-xs uppercase text-slate-400">Goals</p>
-            <p className="text-sm font-medium text-ink-900">{c.goals || "—"}</p>
+            <p className="text-sm font-medium text-ink-900 dark:text-white">{c.goals || "—"}</p>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-ink-900">Session history</h2>
-          <div className="card divide-y divide-slate-100">
+          <h2 className="mb-3 text-lg font-semibold text-ink-900 dark:text-white">Session history</h2>
+          <div className="card divide-y divide-slate-100 dark:divide-white/10">
             {sessionList.length === 0 && (
               <p className="p-5 text-sm text-slate-500">No sessions with this client yet.</p>
             )}
             {sessionList.map((s) => (
               <div key={s.id} className="flex items-center gap-3 p-4">
                 <div className="w-28 shrink-0 text-sm">
-                  <p className="font-medium text-ink-900">{dayLabel(new Date(s.starts_at))}</p>
+                  <p className="font-medium text-ink-900 dark:text-white">{dayLabel(new Date(s.starts_at))}</p>
                   <p className="text-slate-500">{timeRange(s.starts_at, s.ends_at)}</p>
                 </div>
                 <p className="min-w-0 flex-1 truncate text-sm text-slate-600">{s.title}</p>
@@ -109,18 +109,18 @@ export default async function ClientDetailPage({
         </section>
 
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-ink-900">Progress</h2>
+          <h2 className="mb-3 text-lg font-semibold text-ink-900 dark:text-white">Progress</h2>
           <div className="card mb-4 p-5">
             <AddProgressForm clientId={c.id} today={today} />
           </div>
-          <div className="card divide-y divide-slate-100">
+          <div className="card divide-y divide-slate-100 dark:divide-white/10">
             {progressList.length === 0 && (
               <p className="p-5 text-sm text-slate-500">No progress entries yet.</p>
             )}
             {progressList.map((p) => (
               <div key={p.id} className="p-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-ink-900">
+                  <p className="text-sm font-semibold text-ink-900 dark:text-white">
                     {format(new Date(p.recorded_at + "T00:00:00"), "MMM d, yyyy")}
                   </p>
                   <div className="flex gap-3 text-sm text-slate-600">

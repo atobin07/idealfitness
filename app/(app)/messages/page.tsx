@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { MessageComposer } from "@/components/MessageComposer";
+import { MessageThread } from "@/components/MessageThread";
 import { markConversationRead } from "@/app/(app)/messages/actions";
 import type { Message, Profile } from "@/lib/database.types";
 
@@ -80,7 +81,7 @@ export default async function MessagesPage({
 
       <div className="card grid h-[70vh] grid-cols-1 overflow-hidden md:grid-cols-[280px_1fr]">
         {/* Contacts */}
-        <div className={`${active ? "hidden md:block" : "block"} border-r border-slate-200`}>
+        <div className={`${active ? "hidden md:block" : "block"} border-r border-slate-200 dark:border-white/10`}>
           <div className="max-h-full overflow-y-auto">
             {contacts.length === 0 && (
               <p className="p-5 text-sm text-slate-500">
@@ -91,13 +92,13 @@ export default async function MessagesPage({
               <Link
                 key={c.id}
                 href={`/messages?with=${c.id}`}
-                className={`flex items-center gap-3 border-b border-slate-100 px-4 py-3 hover:bg-slate-50 ${
+                className={`flex items-center gap-3 border-b border-slate-100 px-4 py-3 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 ${
                   c.id === activeId ? "bg-brand-50" : ""
                 }`}
               >
                 <Avatar name={c.full_name || "?"} size="sm" />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-ink-900">{c.full_name || "Unnamed"}</p>
+                  <p className="truncate text-sm font-medium text-ink-900 dark:text-white">{c.full_name || "Unnamed"}</p>
                   <p className="truncate text-xs text-slate-500">{c.email}</p>
                 </div>
               </Link>
@@ -113,40 +114,17 @@ export default async function MessagesPage({
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3">
+              <div className="flex items-center gap-3 border-b border-slate-200 px-4 py-3 dark:border-white/10">
                 <Link href="/messages" className="md:hidden">
                   <svg className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </Link>
                 <Avatar name={active.full_name || "?"} size="sm" />
-                <p className="font-semibold text-ink-900">{active.full_name}</p>
+                <p className="font-semibold text-ink-900 dark:text-white">{active.full_name}</p>
               </div>
 
-              <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
-                {thread.length === 0 && (
-                  <p className="m-auto text-sm text-slate-400">No messages yet. Say hello 👋</p>
-                )}
-                {thread.map((m) => {
-                  const mine = m.sender_id === profile.id;
-                  return (
-                    <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-                      <div
-                        className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${
-                          mine
-                            ? "rounded-br-sm bg-brand-600 text-white"
-                            : "rounded-bl-sm bg-slate-100 text-ink-900"
-                        }`}
-                      >
-                        <p className="whitespace-pre-wrap">{m.body}</p>
-                        <p className={`mt-1 text-[10px] ${mine ? "text-brand-100" : "text-slate-400"}`}>
-                          {format(new Date(m.created_at), "MMM d, h:mm a")}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <MessageThread initial={thread} myId={profile.id} otherId={active.id} />
 
               <MessageComposer recipientId={active.id} />
             </>

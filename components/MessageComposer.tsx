@@ -13,7 +13,7 @@ export function MessageComposer({ recipientId }: { recipientId: string }) {
         await sendMessage(formData);
         formRef.current?.reset();
       }}
-      className="flex items-end gap-2 border-t border-slate-200 bg-white p-3"
+      className="flex items-end gap-2 border-t border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-ink-800"
     >
       <input type="hidden" name="recipient_id" value={recipientId} />
       <textarea

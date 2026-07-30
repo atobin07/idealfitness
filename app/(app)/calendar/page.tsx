@@ -76,16 +76,16 @@ export default async function CalendarPage({
         action={<NewSessionDialog role={profile.role} people={people} defaultDate={todayStr} />}
       />
 
-      <div className="mb-5 inline-flex rounded-lg border border-slate-200 bg-white p-1 text-sm">
+      <div className="mb-5 inline-flex rounded-lg border border-slate-200 bg-white p-1 text-sm dark:border-white/10 dark:bg-ink-800">
         <a
           href="/calendar"
-          className={`rounded-md px-3 py-1.5 font-medium ${!showPast ? "bg-brand-600 text-white" : "text-slate-600 hover:text-ink-900"}`}
+          className={`rounded-md px-3 py-1.5 font-medium ${!showPast ? "bg-brand-600 text-white" : "text-slate-600 hover:text-ink-900 dark:text-white"}`}
         >
           Upcoming
         </a>
         <a
           href="/calendar?view=past"
-          className={`rounded-md px-3 py-1.5 font-medium ${showPast ? "bg-brand-600 text-white" : "text-slate-600 hover:text-ink-900"}`}
+          className={`rounded-md px-3 py-1.5 font-medium ${showPast ? "bg-brand-600 text-white" : "text-slate-600 hover:text-ink-900 dark:text-white"}`}
         >
           Past
         </a>
@@ -110,7 +110,7 @@ export default async function CalendarPage({
             <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
               {dayLabel(new Date(key + "T00:00:00"))}
             </h2>
-            <div className="card divide-y divide-slate-100">
+            <div className="card divide-y divide-slate-100 dark:divide-white/10">
               {items.map((s) => {
                 const other = isTrainer ? s.client : s.trainer;
                 return (
@@ -120,7 +120,7 @@ export default async function CalendarPage({
                     </div>
                     <Avatar name={other?.full_name || "Open"} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-ink-900">{s.title}</p>
+                      <p className="truncate font-medium text-ink-900 dark:text-white">{s.title}</p>
                       <p className="truncate text-sm text-slate-500">
                         with {other?.full_name || "Unassigned"}
                         {s.location ? ` · ${s.location}` : ""}
