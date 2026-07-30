@@ -2,6 +2,7 @@ import { requireProfile } from "@/lib/auth";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { ProfileForm } from "@/components/ProfileForm";
+import { AvailabilityEditor } from "@/components/AvailabilityEditor";
 
 export default async function SettingsPage() {
   const profile = await requireProfile();
@@ -20,8 +21,11 @@ export default async function SettingsPage() {
         </div>
       </div>
 
-      <div className="card max-w-2xl p-6">
-        <ProfileForm profile={profile} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="card p-6">
+          <ProfileForm profile={profile} />
+        </div>
+        {profile.role === "trainer" && <AvailabilityEditor trainerId={profile.id} />}
       </div>
     </>
   );

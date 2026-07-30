@@ -37,3 +37,29 @@ export async function updateProfile(
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+export async function addAvailability(formData: FormData) {
+  const profile = await requireProfile();
+  if (profile.role !== "trainer") return;
+  const supabase = await createClient();
+  const weekday = parseInt(String(formData.get("weekday") || "1"), 10);
+  const start_time = String(formData.get("start_time") || "");
+  const end_time = String(formData.get("end_time") || "");
+  if (!start_time || !end_time || end_time <= start_time) return;
+  await supabase.from("availability").insert({
+    trainer_id: profile.id,
+    weekday,
+    start_time,
+    end_time,
+  });
+  revalidatePath("/settings");
+}
+
+export async function removeAvailability(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  await supabase.from("availability").delete().eq("id", id).eq("trainer_id", profile.id);
+  revalidatePath("/settings");
+}
