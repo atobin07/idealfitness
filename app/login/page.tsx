@@ -12,7 +12,7 @@ export default function LoginPage() {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Sign in to your IdealFitness Hub account."
+      subtitle="Sign in to continue to your iDEAL FITNESS hub."
       footer={
         <>
           New here?{" "}

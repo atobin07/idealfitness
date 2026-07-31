@@ -9,22 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // iDEAL FITNESS sky-blue
         brand: {
-          50: "#eefdf3",
-          100: "#d6f9e2",
-          200: "#b0f1c9",
-          300: "#7ce4a8",
-          400: "#42cf82",
-          500: "#1cb567",
-          600: "#109352",
-          700: "#0f7544",
-          800: "#115c39",
-          900: "#0f4c31",
+          50: "#ecfaff",
+          100: "#d4f2fd",
+          200: "#ade7fb",
+          300: "#77d7f6",
+          400: "#3cc0ea", // logo blue
+          500: "#1aa9dc",
+          600: "#0a89bb", // primary button (white text passes AA large)
+          700: "#0c6f98",
+          800: "#125b7c",
+          900: "#144b66",
         },
+        // iDEAL navy (from the hero background)
         ink: {
-          900: "#0b1120",
-          800: "#141c2e",
-          700: "#1f2937",
+          900: "#1e2a3a",
+          800: "#2b3a52",
+          700: "#3a4a63",
         },
       },
       fontFamily: {

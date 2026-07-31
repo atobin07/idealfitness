@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "IdealFitness Hub",
-  description: "Operations, scheduling, and communication for trainers and clients.",
+  title: "iDEAL FITNESS Hub",
+  description: "Your path to better health, strength, and fitness — the iDEAL FITNESS operations hub for trainers and clients.",
 };
 
 // Set the theme before hydration to avoid a flash of the wrong color scheme.

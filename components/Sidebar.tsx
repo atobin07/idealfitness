@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { signOut } from "@/app/auth/actions";
 import { Avatar } from "@/components/Avatar";
+import { Logo } from "@/components/Logo";
 import type { UserRole } from "@/lib/database.types";
 
 type NavItem = { href: string; label: string; icon: string; badge?: number };
@@ -81,11 +82,8 @@ export function Sidebar({
         mobileOpen ? "fixed inset-y-0 left-0 z-40 block w-72" : "hidden"
       } shrink-0 overflow-y-auto bg-ink-900 p-4 text-white lg:sticky lg:top-0 lg:block lg:h-screen lg:w-64`}
     >
-      <div className="mb-6 flex items-center gap-2 px-2 pt-1">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-black shadow-lg shadow-brand-600/30">
-          IF
-        </div>
-        <span className="text-lg font-bold tracking-tight">IdealFitness</span>
+      <div className="mb-6 px-2 pt-1 text-white">
+        <Logo />
       </div>
 
       <nav className="space-y-5">
