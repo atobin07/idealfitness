@@ -14,8 +14,8 @@ export function AuthShell({
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-ink-900 via-ink-800 to-brand-900 px-4 py-10">
       <div className="w-full max-w-md">
-        <div className="mb-2 flex justify-center text-white">
-          <Logo size="lg" />
+        <div className="mb-2 flex justify-center">
+          <Logo variant="white" size="lg" />
         </div>
         <p className="mb-6 text-center text-xs font-medium uppercase tracking-[0.2em] text-brand-300">
           Virginia Beach

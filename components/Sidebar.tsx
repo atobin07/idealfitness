@@ -82,8 +82,8 @@ export function Sidebar({
         mobileOpen ? "fixed inset-y-0 left-0 z-40 block w-72" : "hidden"
       } shrink-0 overflow-y-auto bg-ink-900 p-4 text-white lg:sticky lg:top-0 lg:block lg:h-screen lg:w-64`}
     >
-      <div className="mb-6 px-2 pt-1 text-white">
-        <Logo />
+      <div className="mb-6 px-2 pt-1">
+        <Logo variant="white" />
       </div>
 
       <nav className="space-y-5">
