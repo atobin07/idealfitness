@@ -30,12 +30,14 @@ export function Sidebar({
   role,
   name,
   unread,
+  isAdmin,
   mobileOpen,
   onNavigate,
 }: {
   role: UserRole;
   name: string;
   unread: number;
+  isAdmin: boolean;
   mobileOpen: boolean;
   onNavigate: () => void;
 }) {
@@ -74,6 +76,18 @@ export function Sidebar({
         ...(isTrainer ? [{ href: "/analytics", label: "Analytics", icon: "analytics" }] : []),
       ],
     },
+    ...(isAdmin
+      ? [
+          {
+            title: "Admin",
+            items: [
+              { href: "/admin", label: "Admin console", icon: "analytics" },
+              { href: "/admin/people", label: "People & roster", icon: "clients" },
+              { href: "/admin/settings", label: "Gym settings", icon: "settings" },
+            ],
+          },
+        ]
+      : []),
   ];
 
   return (

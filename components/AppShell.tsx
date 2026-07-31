@@ -13,6 +13,7 @@ export function AppShell({
   name,
   userId,
   unread,
+  isAdmin,
   notifications,
   searchItems,
   children,
@@ -21,6 +22,7 @@ export function AppShell({
   name: string;
   userId: string;
   unread: number;
+  isAdmin: boolean;
   notifications: Notification[];
   searchItems: SearchItem[];
   children: React.ReactNode;
@@ -36,6 +38,7 @@ export function AppShell({
         role={role}
         name={name}
         unread={unread}
+        isAdmin={isAdmin}
         mobileOpen={open}
         onNavigate={() => setOpen(false)}
       />

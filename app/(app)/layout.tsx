@@ -44,6 +44,13 @@ export default async function AppLayout({
           { label: "Analytics", href: "/analytics", group: "Page" as const },
         ]
       : []),
+    ...(profile.is_admin
+      ? [
+          { label: "Admin console", href: "/admin", group: "Admin" as const },
+          { label: "People & roster", href: "/admin/people", group: "Admin" as const },
+          { label: "Gym settings", href: "/admin/settings", group: "Admin" as const },
+        ]
+      : []),
   ];
 
   const searchItems: SearchItem[] = [...pages];
@@ -76,6 +83,7 @@ export default async function AppLayout({
       name={profile.full_name || "You"}
       userId={profile.id}
       unread={unread ?? 0}
+      isAdmin={profile.is_admin}
       notifications={(notifications ?? []) as Notification[]}
       searchItems={searchItems}
     >

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/database.types";
 
@@ -36,5 +36,12 @@ export async function requireProfile(): Promise<Profile> {
     return created;
   }
 
+  return profile;
+}
+
+/** Returns the profile only if the user is a gym admin; otherwise 404s. */
+export async function requireAdmin(): Promise<Profile> {
+  const profile = await requireProfile();
+  if (!profile.is_admin) notFound();
   return profile;
 }

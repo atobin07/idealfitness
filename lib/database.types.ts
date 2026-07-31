@@ -102,9 +102,15 @@ export type Database = {
         Relationships: [{ foreignKeyName: "packages_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
       profiles: {
-        Row: { avatar_url: string | null; bio: string | null; created_at: string; email: string | null; full_name: string; goals: string | null; id: string; phone: string | null; role: Database["public"]["Enums"]["user_role"]; updated_at: string }
-        Insert: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id: string; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
-        Update: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id?: string; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
+        Row: { avatar_url: string | null; bio: string | null; created_at: string; email: string | null; full_name: string; goals: string | null; id: string; is_admin: boolean; phone: string | null; role: Database["public"]["Enums"]["user_role"]; updated_at: string }
+        Insert: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
+        Update: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id?: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
+        Relationships: []
+      }
+      gym_settings: {
+        Row: { id: boolean; name: string; tagline: string | null; email: string | null; phone: string | null; address: string | null; city: string | null; timezone: string; currency: string; booking_window_days: number; cancel_cutoff_hours: number; updated_at: string }
+        Insert: { id?: boolean; name?: string; tagline?: string | null; email?: string | null; phone?: string | null; address?: string | null; city?: string | null; timezone?: string; currency?: string; booking_window_days?: number; cancel_cutoff_hours?: number; updated_at?: string }
+        Update: { id?: boolean; name?: string; tagline?: string | null; email?: string | null; phone?: string | null; address?: string | null; city?: string | null; timezone?: string; currency?: string; booking_window_days?: number; cancel_cutoff_hours?: number; updated_at?: string }
         Relationships: []
       }
       sessions: {
@@ -165,6 +171,7 @@ export type Database = {
     Views: { [_ in never]: never }
     Functions: {
       current_user_role: { Args: never; Returns: Database["public"]["Enums"]["user_role"] }
+      is_admin: { Args: never; Returns: boolean }
       notify: { Args: { nbody: string; nlink: string; ntitle: string; ntype: string; target: string }; Returns: undefined }
     }
     Enums: {
@@ -212,3 +219,4 @@ export type Package = Tbl["packages"]["Row"];
 export type ClientPackage = Tbl["client_packages"]["Row"];
 export type Invoice = Tbl["invoices"]["Row"];
 export type Notification = Tbl["notifications"]["Row"];
+export type GymSettings = Tbl["gym_settings"]["Row"];
