@@ -7,6 +7,57 @@ import type { EventKind, RsvpStatus } from "@/lib/database.types";
 
 export type EventState = { error?: string; ok?: boolean } | undefined;
 
+// Pull title / description / image from a shared link's Open Graph tags.
+export async function unfurlLink(url: string): Promise<{ title?: string; description?: string; image?: string; error?: string }> {
+  await requireProfile();
+  let target: URL;
+  try {
+    target = new URL(url.trim());
+    if (!/^https?:$/.test(target.protocol)) throw new Error("bad protocol");
+  } catch {
+    return { error: "That doesn't look like a valid link." };
+  }
+
+  const decode = (s: string) =>
+    s
+      .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'")
+      .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#x27;/g, "'").replace(/&nbsp;/g, " ").trim();
+
+  const pick = (html: string, prop: string) => {
+    const res = [
+      new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']*)["']`, "i"),
+      new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:property|name)=["']${prop}["']`, "i"),
+    ];
+    for (const re of res) {
+      const m = html.match(re);
+      if (m?.[1]) return decode(m[1]);
+    }
+    return undefined;
+  };
+
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 6000);
+    const res = await fetch(target.toString(), {
+      signal: ctl.signal,
+      headers: { "user-agent": "Mozilla/5.0 (compatible; iDEALFitnessBot/1.0; +https://idealfitvb.com)", accept: "text/html" },
+    });
+    clearTimeout(timer);
+    if (!res.ok) return { error: `Couldn't reach that link (${res.status}).` };
+    const html = (await res.text()).slice(0, 400_000);
+
+    let image = pick(html, "og:image") || pick(html, "twitter:image");
+    if (image && image.startsWith("/")) image = new URL(image, target).toString();
+    const title = pick(html, "og:title") || pick(html, "twitter:title") || decode(html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] ?? "");
+    const description = pick(html, "og:description") || pick(html, "twitter:description") || pick(html, "description");
+
+    if (!title && !image && !description) return { error: "No preview found. Some sites (like Facebook) block previews — you can still fill it in by hand." };
+    return { title: title || undefined, description: description || undefined, image: image || undefined };
+  } catch {
+    return { error: "Couldn't load that link. You can still add the details manually." };
+  }
+}
+
 export async function createEvent(_prev: EventState, formData: FormData): Promise<EventState> {
   const profile = await requireProfile();
   const supabase = await createClient();

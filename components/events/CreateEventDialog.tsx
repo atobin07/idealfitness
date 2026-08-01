@@ -3,16 +3,21 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { createEvent } from "@/app/(app)/events/actions";
+import { createEvent, unfurlLink } from "@/app/(app)/events/actions";
 import type { EventKind } from "@/lib/database.types";
 
 export function CreateEventDialog({ myId, defaultDate }: { myId: string; defaultDate: string }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLInputElement>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<EventKind>("gym");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [importedImage, setImportedImage] = useState<string | null>(null);
+  const [importUrl, setImportUrl] = useState("");
+  const [importing, setImporting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -22,9 +27,23 @@ export function CreateEventDialog({ myId, defaultDate }: { myId: string; default
     setPreview(f ? URL.createObjectURL(f) : null);
   }
 
+  async function doImport() {
+    if (!importUrl.trim()) return;
+    setImporting(true);
+    setError(null);
+    const res = await unfurlLink(importUrl);
+    setImporting(false);
+    if (res.error) { setError(res.error); return; }
+    if (res.title && titleRef.current) titleRef.current.value = res.title.slice(0, 120);
+    if (res.description && descRef.current) descRef.current.value = res.description;
+    if (res.image) { setImportedImage(res.image); setPreview(res.image); setFile(null); }
+  }
+
   function reset() {
     setKind("gym");
     pickFile(null);
+    setImportedImage(null);
+    setImportUrl("");
     setError(null);
     if (fileRef.current) fileRef.current.value = "";
     formRef.current?.reset();
@@ -43,6 +62,7 @@ export function CreateEventDialog({ myId, defaultDate }: { myId: string; default
         if (upErr) throw new Error(upErr.message);
         imageUrl = supabase.storage.from("post-media").getPublicUrl(path).data.publicUrl;
       }
+      if (!imageUrl && importedImage) imageUrl = importedImage;
       formData.set("kind", kind);
       if (imageUrl) formData.set("image_url", imageUrl);
       const res = await createEvent(undefined, formData);
@@ -78,14 +98,33 @@ export function CreateEventDialog({ myId, defaultDate }: { myId: string; default
               <button type="button" onClick={() => setKind("social")} className={`rounded-lg border px-3 py-2 text-sm font-medium ${kind === "social" ? "border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300" : "border-slate-200 text-slate-600 dark:border-white/10 dark:text-slate-300"}`}>🎉 Non-gym event</button>
             </div>
 
+            {/* Import from a shared link */}
+            <div className="mb-4 rounded-lg border border-dashed border-brand-300 bg-brand-50/50 p-3 dark:border-brand-500/30 dark:bg-brand-500/10">
+              <label className="label" htmlFor="e-import">🔗 Paste a link to import</label>
+              <div className="flex gap-2">
+                <input
+                  id="e-import"
+                  value={importUrl}
+                  onChange={(e) => setImportUrl(e.target.value)}
+                  className="input flex-1"
+                  placeholder="Link to a brewery event, Eventbrite, a post…"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); doImport(); } }}
+                />
+                <button type="button" onClick={doImport} disabled={importing || !importUrl.trim()} className="btn-secondary shrink-0">
+                  {importing ? "Importing…" : "Import"}
+                </button>
+              </div>
+              <p className="mt-1 text-xs muted">We&apos;ll pull in the title, details, and photo. (Facebook may block previews — you can still edit anything below.)</p>
+            </div>
+
             <form ref={formRef} action={submit} className="space-y-4">
               <div>
                 <label className="label" htmlFor="e-title">Event name</label>
-                <input id="e-title" name="title" required className="input" placeholder={kind === "gym" ? "Saturday Partner WOD" : "Team dinner at Tony's"} />
+                <input ref={titleRef} id="e-title" name="title" required className="input" placeholder={kind === "gym" ? "Saturday Partner WOD" : "Team dinner at Tony's"} />
               </div>
               <div>
                 <label className="label" htmlFor="e-desc">Details</label>
-                <textarea id="e-desc" name="description" rows={3} className="input" placeholder="What's happening, what to bring, who's invited…" />
+                <textarea ref={descRef} id="e-desc" name="description" rows={3} className="input" placeholder="What's happening, what to bring, who's invited…" />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
@@ -110,7 +149,7 @@ export function CreateEventDialog({ myId, defaultDate }: { myId: string; default
                 <div className="relative inline-block">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={preview} alt="Preview" className="max-h-56 rounded-lg" />
-                  <button type="button" onClick={() => { pickFile(null); if (fileRef.current) fileRef.current.value = ""; }} className="absolute right-2 top-2 rounded-full bg-black/60 p-1 text-white" aria-label="Remove photo">
+                  <button type="button" onClick={() => { pickFile(null); setImportedImage(null); if (fileRef.current) fileRef.current.value = ""; }} className="absolute right-2 top-2 rounded-full bg-black/60 p-1 text-white" aria-label="Remove photo">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
