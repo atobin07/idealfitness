@@ -368,6 +368,12 @@ export type Database = {
           { foreignKeyName: "feedback_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      support_tickets: {
+        Row: { id: string; user_id: string; category: string; subject: string; summary: string; details: string | null; urgency: string; status: string; created_at: string }
+        Insert: { id?: string; user_id: string; category: string; subject: string; summary: string; details?: string | null; urgency?: string; status?: string; created_at?: string }
+        Update: { id?: string; user_id?: string; category?: string; subject?: string; summary?: string; details?: string | null; urgency?: string; status?: string; created_at?: string }
+        Relationships: [{ foreignKeyName: "support_tickets_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
