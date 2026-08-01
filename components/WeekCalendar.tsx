@@ -85,7 +85,7 @@ function statusBlockColor(status: string) {
     case "completed": return "bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 shadow-sm ring-1 ring-slate-200/80 dark:from-white/10 dark:to-white/[0.04] dark:text-slate-300 dark:ring-white/10";
     case "cancelled": return "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 line-through shadow-sm ring-1 ring-rose-200/70 dark:from-rose-500/15 dark:to-rose-500/5 dark:text-rose-300 dark:ring-rose-500/20";
     case "no_show": return "bg-gradient-to-br from-amber-50 to-amber-100 text-amber-700 shadow-sm ring-1 ring-amber-200/70 dark:from-amber-500/15 dark:to-amber-500/5 dark:text-amber-300 dark:ring-amber-500/20";
-    default: return "bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-md shadow-brand-600/30 ring-1 ring-white/20";
+    default: return "bg-gradient-to-br from-brand-400 to-brand-500 text-white shadow-md shadow-brand-500/30 ring-1 ring-white/25";
   }
 }
 
