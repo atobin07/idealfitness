@@ -13,7 +13,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   const supabase = await createClient();
 
   const [{ data: profile }, { data: mpRaw }, { data: stats }, { data: badges }] = await Promise.all([
-    supabase.from("profiles").select("id, full_name, role, avatar_url, bio, goals").eq("id", id).maybeSingle(),
+    supabase.from("profiles").select("id, full_name, role, avatar_url, bio, goals, specialties").eq("id", id).maybeSingle(),
     supabase.from("member_profiles").select("*").eq("user_id", id).maybeSingle(),
     supabase.from("member_stats").select("total_points, level, current_streak, longest_streak").eq("user_id", id).maybeSingle(),
     supabase.from("member_badges").select("badge:badge_id(id, name, icon)").eq("user_id", id),
@@ -72,6 +72,17 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           {isMe && <Link href="/settings" className="btn-on-brand">Edit my profile</Link>}
         </div>
       </div>
+
+      {profile.role === "trainer" && (profile.specialties?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide muted">Areas of expertise</h2>
+          <div className="flex flex-wrap gap-1.5">
+            {profile.specialties.map((s) => (
+              <span key={s} className="badge bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">{s}</span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {mp?.current_goal && (
         <div className="mt-6 flex items-start gap-3 rounded-xl border border-brand-200 bg-brand-50 p-5 dark:border-brand-500/30 dark:bg-brand-500/10">

@@ -6,6 +6,7 @@ import { Avatar } from "@/components/Avatar";
 import { EmailLinkForm } from "@/components/EmailLinkForm";
 import { addClientByEmail, connectToTrainer } from "@/app/(app)/clients/actions";
 import { WEEKDAYS } from "@/lib/format";
+import { CoachDirectory } from "@/components/CoachDirectory";
 import type { Profile, MemberProfile, Availability } from "@/lib/database.types";
 
 function hhmm(t: string) {
@@ -67,14 +68,22 @@ export default async function ClientsPage() {
   }
 
   // Client view — show linked trainer(s) with a full profile.
-  const { data } = await supabase
-    .from("trainer_clients")
-    .select("trainer:trainer_id(id, full_name, email, bio, goals, avatar_url, phone)")
-    .eq("client_id", profile.id)
-    .eq("status", "active");
+  const [{ data }, { data: allCoaches }] = await Promise.all([
+    supabase
+      .from("trainer_clients")
+      .select("trainer:trainer_id(id, full_name, email, bio, goals, avatar_url, phone, specialties)")
+      .eq("client_id", profile.id)
+      .eq("status", "active"),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email, bio, avatar_url, specialties")
+      .eq("role", "trainer")
+      .order("full_name"),
+  ]);
 
   const trainers = (data ?? []).map((r) => r.trainer as unknown as Profile).filter(Boolean);
   const trainerIds = trainers.map((t) => t.id);
+  const coaches = (allCoaches ?? []) as unknown as Profile[];
 
   let profiles: MemberProfile[] = [];
   let avails: Availability[] = [];
@@ -131,6 +140,16 @@ export default async function ClientsPage() {
 
                 <div className="grid gap-6 p-6 md:grid-cols-2">
                   <div className="space-y-5">
+                    {t.specialties?.length > 0 && (
+                      <div>
+                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide muted">Areas of expertise</h3>
+                        <div className="flex flex-wrap gap-1.5">
+                          {t.specialties.map((s) => (
+                            <span key={s} className="badge bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {mp?.intro && (
                       <div>
                         <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide muted">About</h3>
@@ -184,6 +203,14 @@ export default async function ClientsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {coaches.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-ink-900 dark:text-white">Find a coach</h2>
+          <p className="mb-4 text-sm muted">Filter by what you want to work on and book the coach who fits best.</p>
+          <CoachDirectory coaches={coaches.map((c) => ({ id: c.id, full_name: c.full_name, bio: c.bio, avatar_url: c.avatar_url, specialties: c.specialties ?? [] }))} />
         </div>
       )}
     </>

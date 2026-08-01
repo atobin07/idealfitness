@@ -37,6 +37,15 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           placeholder={profile.role === "trainer" ? "How you like to work with clients" : "Lose 5kg, run a 10k, build strength…"} />
       </div>
 
+      {profile.role === "trainer" && (
+        <div>
+          <label className="label" htmlFor="specialties">Areas of expertise</label>
+          <input id="specialties" name="specialties" defaultValue={(profile.specialties ?? []).join(", ")} className="input"
+            placeholder="Strength & Powerlifting, Mobility, Weight Loss" />
+          <p className="mt-1 text-xs muted">Comma-separated. Members filter and book coaches by these.</p>
+        </div>
+      )}
+
       {state?.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{state.error}</p>
       )}

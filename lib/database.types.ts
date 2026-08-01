@@ -111,9 +111,9 @@ export type Database = {
         Relationships: [{ foreignKeyName: "packages_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
       profiles: {
-        Row: { avatar_url: string | null; bio: string | null; created_at: string; email: string | null; full_name: string; goals: string | null; id: string; is_admin: boolean; phone: string | null; role: Database["public"]["Enums"]["user_role"]; updated_at: string }
-        Insert: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
-        Update: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id?: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; updated_at?: string }
+        Row: { avatar_url: string | null; bio: string | null; created_at: string; email: string | null; full_name: string; goals: string | null; id: string; is_admin: boolean; phone: string | null; role: Database["public"]["Enums"]["user_role"]; specialties: string[]; updated_at: string }
+        Insert: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; specialties?: string[]; updated_at?: string }
+        Update: { avatar_url?: string | null; bio?: string | null; created_at?: string; email?: string | null; full_name?: string; goals?: string | null; id?: string; is_admin?: boolean; phone?: string | null; role?: Database["public"]["Enums"]["user_role"]; specialties?: string[]; updated_at?: string }
         Relationships: []
       }
       gym_settings: {

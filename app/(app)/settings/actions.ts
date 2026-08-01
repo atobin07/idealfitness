@@ -20,6 +20,11 @@ export async function updateProfile(
   const phone = String(formData.get("phone") || "").trim();
   const bio = String(formData.get("bio") || "").trim();
   const goals = String(formData.get("goals") || "").trim();
+  const specialties = String(formData.get("specialties") || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 12);
 
   if (!full_name) return { error: "Name can't be empty." };
 
@@ -30,6 +35,7 @@ export async function updateProfile(
       phone: phone || null,
       bio: bio || null,
       goals: goals || null,
+      ...(profile.role === "trainer" ? { specialties } : {}),
       updated_at: new Date().toISOString(),
     })
     .eq("id", profile.id);
