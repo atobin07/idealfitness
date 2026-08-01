@@ -393,6 +393,8 @@ export type Database = {
       do_checkin: { Args: never; Returns: Json }
       is_staff: { Args: never; Returns: boolean }
       record_attendance: { Args: { p_member: string; p_status: Database["public"]["Enums"]["attendance_status"]; p_class?: string | null; p_date?: string; p_note?: string | null }; Returns: Json }
+      trainer_busy_blocks: { Args: { p_trainer: string; p_from: string; p_to: string }; Returns: { starts_at: string; ends_at: string }[] }
+      trainer_has_conflict: { Args: { p_trainer: string; p_start: string; p_end: string }; Returns: boolean }
       give_kudos: { Args: { p_activity: string }; Returns: undefined }
       settle_duel: { Args: { did: string }; Returns: undefined }
       challenge_leaderboard: { Args: { cid: string }; Returns: { user_id: string; full_name: string; score: number }[] }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { format, isSameDay } from "date-fns";
 import { createSession, setSessionStatus } from "@/app/(app)/calendar/actions";
 import { bookClass, cancelBooking } from "@/app/(app)/classes/actions";
@@ -34,6 +34,7 @@ export type CalClass = {
 
 type Person = { id: string; full_name: string };
 export type AvailWindow = { weekday: number; startMin: number; endMin: number };
+export type BusyBlock = { starts_at: string; ends_at: string };
 
 const START_HOUR = 6;
 const END_HOUR = 21;
@@ -95,6 +96,9 @@ export function WeekCalendar({
   people,
   myId,
   avail = [],
+  coaches = [],
+  selectedCoach,
+  busy = [],
 }: {
   days: string[]; // yyyy-MM-dd for each column
   sessions: CalSession[];
@@ -103,8 +107,21 @@ export function WeekCalendar({
   people: Person[];
   myId: string;
   avail?: AvailWindow[];
+  coaches?: Person[];
+  selectedCoach?: string;
+  busy?: BusyBlock[];
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isClient = role === "client";
+  const coachName = coaches.find((c) => c.id === selectedCoach)?.full_name;
+
+  function pickCoach(id: string) {
+    const p = new URLSearchParams(searchParams.toString());
+    p.set("coach", id);
+    router.push(`${pathname}?${p.toString()}`);
+  }
   const [prefill, setPrefill] = useState<{ date: string; time: string } | null>(null);
   const [selected, setSelected] = useState<CalSession | null>(null);
   const [selectedClass, setSelectedClass] = useState<CalClass | null>(null);
@@ -136,6 +153,16 @@ export function WeekCalendar({
     }
     return m;
   }, [days, classes]);
+
+  const busyByDay = useMemo(() => {
+    const m = new Map<string, BusyBlock[]>();
+    for (const d of days) m.set(d, []);
+    for (const b of busy) {
+      const key = format(new Date(b.starts_at), "yyyy-MM-dd");
+      if (m.has(key)) m.get(key)!.push(b);
+    }
+    return m;
+  }, [days, busy]);
 
   const nowTop = useMemo(() => {
     const now = new Date();
@@ -197,16 +224,43 @@ export function WeekCalendar({
 
   return (
     <div className="card overflow-hidden">
-      <div className="flex items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 dark:border-white/10">
-        <p className="text-xs muted">
-          Click any open slot to book · <span className="text-violet-500">violet</span> = group class
-          {avail.length > 0 && <> · <span className="text-slate-400">shaded</span> = outside trainer hours</>}
-        </p>
+      {/* Toolbar: coach filter + prominent booking CTA */}
+      <div className="flex flex-col gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          {isClient && coaches.length > 0 && (
+            <label className="flex items-center gap-2 text-xs font-medium text-ink-900 dark:text-white">
+              <span className="muted">Coach</span>
+              <select
+                value={selectedCoach ?? ""}
+                onChange={(e) => pickCoach(e.target.value)}
+                className="input h-8 w-auto py-1 text-xs"
+              >
+                {coaches.map((c) => (
+                  <option key={c.id} value={c.id}>{c.full_name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
         {people.length > 0 && (
-          <button onClick={() => { setError(null); setPrefill({ date: defaultDay, time: "09:00" }); }} className="btn-primary px-3 py-1.5 text-xs">
-            + New appointment
+          <button
+            onClick={() => { setError(null); setPrefill({ date: defaultDay, time: "09:00" }); }}
+            className="btn-primary flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+            Book personal training
           </button>
         )}
+      </div>
+
+      {/* Instruction banner */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-brand-100 bg-brand-50/60 px-3 py-2 text-xs dark:border-brand-500/20 dark:bg-brand-500/10">
+        <span className="font-medium text-brand-700 dark:text-brand-300">
+          👆 Tap any open (white) slot{coachName ? ` with ${coachName}` : ""} to book a session.
+        </span>
+        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-slate-200 bg-[repeating-linear-gradient(45deg,transparent,transparent_3px,rgba(100,116,139,0.25)_3px,rgba(100,116,139,0.25)_6px)]" /> off-hours</span>
+        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-slate-300 dark:bg-white/20" />🔒 booked</span>
+        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-violet-300" /> group class</span>
       </div>
       {notice && (
         <div className="flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
@@ -257,10 +311,24 @@ export function WeekCalendar({
                   openSlot(d, e.clientY - rect.top);
                 }}
               >
-                {/* Hour lines */}
-                {HOURS.map((h) => (
-                  <div key={h} style={{ height: PX_PER_HOUR }} className="border-b border-slate-100 hover:bg-brand-50/40 dark:border-white/5 dark:hover:bg-white/5" />
-                ))}
+                {/* Hour lines — open hours invite a booking on hover */}
+                {HOURS.map((h) => {
+                  const weekday = new Date(d + "T00:00:00").getDay();
+                  const openHour = avail.length === 0 || isAvailable(weekday, h * 60, avail) || isAvailable(weekday, h * 60 + 30, avail);
+                  return (
+                    <div
+                      key={h}
+                      style={{ height: PX_PER_HOUR }}
+                      className={`group/cell relative border-b border-slate-100 dark:border-white/5 ${openHour ? "cursor-pointer hover:bg-brand-100/70 dark:hover:bg-brand-500/10" : ""}`}
+                    >
+                      {openHour && (
+                        <span className="pointer-events-none absolute inset-0 z-[5] hidden items-center justify-center text-[10px] font-semibold text-brand-600 group-hover/cell:flex dark:text-brand-300">
+                          ＋ Book
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
 
                 {/* Off-hours shading (outside trainer availability) */}
                 {avail.length > 0 &&
@@ -279,6 +347,27 @@ export function WeekCalendar({
                     <div className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
                   </div>
                 )}
+
+                {/* Booked (locked) blocks — coach is busy; times shown, not who */}
+                {(busyByDay.get(d) ?? []).map((b, i) => {
+                  const start = new Date(b.starts_at);
+                  const end = new Date(b.ends_at);
+                  const startMin = start.getHours() * 60 + start.getMinutes() - START_HOUR * 60;
+                  const durMin = Math.max(30, (end.getTime() - start.getTime()) / 60000);
+                  const top = (startMin / 60) * PX_PER_HOUR;
+                  const height = (durMin / 60) * PX_PER_HOUR - 2;
+                  return (
+                    <div
+                      key={`busy-${i}`}
+                      onClick={(e) => { e.stopPropagation(); setNotice("That time is already booked. Pick an open slot."); }}
+                      style={{ top: Math.max(0, top), height: Math.max(20, height) }}
+                      className="absolute left-1 right-1 z-10 flex items-center gap-1 overflow-hidden rounded-md border border-slate-300 bg-slate-200/80 bg-[repeating-linear-gradient(45deg,transparent,transparent_5px,rgba(100,116,139,0.14)_5px,rgba(100,116,139,0.14)_10px)] px-2 py-1 text-[11px] font-medium text-slate-500 dark:border-white/15 dark:bg-white/10 dark:text-slate-300"
+                    >
+                      <span>🔒</span>
+                      <span>{format(start, "h:mm")} Booked</span>
+                    </div>
+                  );
+                })}
 
                 {/* Session blocks */}
                 {(byDay.get(d) ?? []).map((s) => {
@@ -355,7 +444,7 @@ export function WeekCalendar({
               <form ref={formRef} action={submitBooking} className="space-y-4">
                 <div>
                   <label className="label">{counterpartLabel}</label>
-                  <select name="counterpart_id" required defaultValue={people.length === 1 ? people[0].id : ""} className="input">
+                  <select name="counterpart_id" required defaultValue={isClient ? selectedCoach ?? "" : people.length === 1 ? people[0].id : ""} className="input">
                     <option value="" disabled>Select a {counterpartLabel.toLowerCase()}…</option>
                     {people.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
                   </select>

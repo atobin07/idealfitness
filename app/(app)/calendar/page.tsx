@@ -26,9 +26,9 @@ async function bookablePeople(profileId: string, role: string) {
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; date?: string }>;
+  searchParams: Promise<{ view?: string; date?: string; coach?: string }>;
 }) {
-  const { view: viewParam, date: dateParam } = await searchParams;
+  const { view: viewParam, date: dateParam, coach: coachParam } = await searchParams;
   const view = viewParam === "day" || viewParam === "list" ? viewParam : "week";
   const profile = await requireProfile();
   const supabase = await createClient();
@@ -133,28 +133,60 @@ export default async function CalendarPage({
     };
   });
 
-  const people = await bookablePeople(profile.id, profile.role);
+  // Coaches to filter by: clients choose one to see who's available and when;
+  // trainers only ever see their own calendar.
+  let coaches: { id: string; full_name: string }[];
+  if (isTrainer) {
+    coaches = [{ id: profile.id, full_name: profile.full_name }];
+  } else {
+    const { data: cs } = await supabase.from("profiles").select("id, full_name").eq("role", "trainer").order("full_name");
+    coaches = (cs ?? []) as { id: string; full_name: string }[];
+  }
+  const selectedCoach = isTrainer
+    ? profile.id
+    : coaches.find((c) => c.id === coachParam)?.id ?? coaches[0]?.id ?? null;
 
-  // Sync the grid with trainer availability: coaches see their own windows,
-  // clients see the windows of the trainer(s) they're linked to.
-  const trainerIds = isTrainer ? [profile.id] : people.map((p) => p.id);
+  // Booking dialog counterpart: trainers pick a client, clients book the coach.
+  const people = isTrainer ? await bookablePeople(profile.id, profile.role) : coaches;
+
+  // Availability windows + anonymized busy blocks for the selected coach.
   let avail: AvailWindow[] = [];
-  if (trainerIds.length > 0) {
+  let busy: { starts_at: string; ends_at: string }[] = [];
+  if (selectedCoach) {
     const { data: availData } = await supabase
       .from("availability")
       .select("weekday, start_time, end_time")
-      .in("trainer_id", trainerIds);
+      .eq("trainer_id", selectedCoach);
     avail = (availData ?? []).map((a) => ({
       weekday: a.weekday,
       startMin: toMinutes(a.start_time),
       endMin: toMinutes(a.end_time),
     }));
+    if (!isTrainer) {
+      const { data: busyData } = await supabase.rpc("trainer_busy_blocks", {
+        p_trainer: selectedCoach,
+        p_from: rangeStart,
+        p_to: rangeEnd,
+      });
+      busy = (busyData ?? []) as { starts_at: string; ends_at: string }[];
+    }
   }
 
   return (
     <>
       <CalendarHeader view={view} anchor={anchor} />
-      <WeekCalendar days={days} sessions={sessions} classes={classes} role={profile.role} people={people} myId={profile.id} avail={avail} />
+      <WeekCalendar
+        days={days}
+        sessions={sessions}
+        classes={classes}
+        role={profile.role}
+        people={people}
+        myId={profile.id}
+        avail={avail}
+        coaches={coaches}
+        selectedCoach={selectedCoach ?? undefined}
+        busy={busy}
+      />
     </>
   );
 }

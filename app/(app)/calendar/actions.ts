@@ -37,18 +37,15 @@ export async function createSession(
   const trainer_id = profile.role === "trainer" ? profile.id : counterpartId;
   const client_id = profile.role === "trainer" ? counterpartId : profile.id;
 
-  // Prevent double-booking: reject if the trainer already has an overlapping
-  // scheduled session.
-  const { data: clash } = await supabase
-    .from("sessions")
-    .select("id")
-    .eq("trainer_id", trainer_id)
-    .eq("status", "scheduled")
-    .lt("starts_at", ends.toISOString())
-    .gt("ends_at", starts.toISOString())
-    .limit(1);
-  if (clash && clash.length > 0) {
-    return { error: "That time overlaps an existing session. Pick another slot." };
+  // Prevent double-booking — checks ALL of the trainer's sessions, including
+  // ones the requester can't see (other clients), via a SECURITY DEFINER fn.
+  const { data: conflict } = await supabase.rpc("trainer_has_conflict", {
+    p_trainer: trainer_id,
+    p_start: starts.toISOString(),
+    p_end: ends.toISOString(),
+  });
+  if (conflict) {
+    return { error: "That time is already booked. Pick an open slot." };
   }
 
   const { error } = await supabase.from("sessions").insert({
