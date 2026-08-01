@@ -77,7 +77,8 @@ function isAvailable(weekday: number, min: number, avail: AvailWindow[]) {
 
 function minutesFromTop(y: number) {
   const raw = (y / PX_PER_HOUR) * 60;
-  return Math.max(0, Math.min((END_HOUR - START_HOUR) * 60 - 30, Math.round(raw / 30) * 30));
+  // Snap to 15-minute increments so 10:15 / 10:30 / 10:45 are all selectable.
+  return Math.max(0, Math.min((END_HOUR - START_HOUR) * 60 - 15, Math.round(raw / 15) * 15));
 }
 
 function statusBlockColor(status: string) {
