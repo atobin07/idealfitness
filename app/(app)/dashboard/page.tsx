@@ -135,7 +135,7 @@ export default async function DashboardPage() {
                 <p className="mt-1 text-lg font-bold">{nextClass.title}</p>
                 <p className="text-sm text-brand-100">{dayLabel(new Date(nextClass.starts_at))}</p>
                 <Link href="/classes" className="mt-3 inline-block rounded-lg bg-white/20 px-3 py-1.5 text-sm font-medium hover:bg-white/30">
-                  {isTrainer ? "Manage classes" : "Book a spot"}
+                  {isTrainer ? "Manage classes" : "I'm in! 💪"}
                 </Link>
               </div>
             </div>

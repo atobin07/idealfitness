@@ -112,7 +112,7 @@ export default async function ClassesPage() {
                 ) : (
                   <form action={bookClass} className="w-full">
                     <input type="hidden" name="class_id" value={c.id} />
-                    <button className="btn-primary w-full">{spotsLeft > 0 ? "Book class" : "Join waitlist"}</button>
+                    <button className="btn-primary w-full">{spotsLeft > 0 ? "I'll be there crushing it! 💪" : "Add me to the waitlist"}</button>
                   </form>
                 )}
               </div>

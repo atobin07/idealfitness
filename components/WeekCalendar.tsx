@@ -460,8 +460,8 @@ export function WeekCalendar({
                   : selectedClass.myStatus
                   ? `Cancel ${selectedClass.myStatus === "waitlisted" ? "waitlist spot" : "booking"}`
                   : selectedClass.booked >= selectedClass.capacity
-                  ? "Join waitlist"
-                  : "Book my spot"}
+                  ? "Add me to the waitlist"
+                  : "I'll be there crushing it! 💪"}
               </button>
             )}
             {role === "trainer" && (
