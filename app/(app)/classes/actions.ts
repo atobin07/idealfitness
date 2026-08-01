@@ -81,6 +81,7 @@ export async function bookClass(formData: FormData) {
     .upsert({ class_id: classId, client_id: profile.id, status }, { onConflict: "class_id,client_id" });
 
   revalidatePath("/classes");
+  revalidatePath("/calendar");
 }
 
 export async function cancelBooking(formData: FormData) {
@@ -114,4 +115,5 @@ export async function cancelBooking(formData: FormData) {
   }
 
   revalidatePath("/classes");
+  revalidatePath("/calendar");
 }

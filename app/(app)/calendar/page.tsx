@@ -125,6 +125,7 @@ export default async function CalendarPage({
       title: c.title,
       starts_at: c.starts_at,
       ends_at: c.ends_at,
+      trainer_id: c.trainer_id,
       capacity: c.capacity,
       location: c.location,
       booked: bookings.filter((b) => b.status === "booked").length,

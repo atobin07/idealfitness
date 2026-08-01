@@ -25,6 +25,7 @@ export type CalClass = {
   title: string;
   starts_at: string;
   ends_at: string;
+  trainer_id: string;
   capacity: number;
   location: string | null;
   booked: number;
@@ -542,7 +543,9 @@ export function WeekCalendar({
               <div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.min(100, (selectedClass.booked / Math.max(1, selectedClass.capacity)) * 100)}%` }} />
             </div>
 
-            {role === "client" && (
+            {/* Anyone with app access can book a group class — the only exception
+                is the coach who runs it, who manages the roster instead. */}
+            {selectedClass.trainer_id !== myId ? (
               <button onClick={() => toggleClassBooking(selectedClass)} disabled={pending} className={`mt-4 w-full ${selectedClass.myStatus ? "btn-secondary" : "btn-primary"}`}>
                 {pending
                   ? "Working…"
@@ -552,9 +555,8 @@ export function WeekCalendar({
                   ? "Add me to the waitlist"
                   : "I'll be there crushing it! 💪"}
               </button>
-            )}
-            {role === "trainer" && (
-              <p className="mt-4 text-xs muted">Manage classes and rosters on the Classes page.</p>
+            ) : (
+              <p className="mt-4 text-xs muted">You run this class — manage the roster on the Classes page.</p>
             )}
           </div>
         </div>
