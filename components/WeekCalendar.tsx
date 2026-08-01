@@ -264,7 +264,7 @@ export function WeekCalendar({
         </span>
         <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-slate-200 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(100,116,139,0.3)_2px,rgba(100,116,139,0.3)_4px)]" /> off-hours</span>
         <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10">🔒 booked</span>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-gradient-to-br from-violet-500 to-fuchsia-500" /> group class</span>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-gradient-to-br from-ink-700 to-ink-900" /> group class</span>
       </div>
       {notice && (
         <div className="flex items-center justify-between gap-2 bg-amber-50 px-4 py-2 text-xs text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
@@ -417,10 +417,10 @@ export function WeekCalendar({
                       key={c.id}
                       onClick={(e) => { e.stopPropagation(); setSelectedClass(c); }}
                       style={{ top: Math.max(0, top), height: Math.max(20, height) }}
-                      className={`group/cls absolute left-1 right-1 z-10 overflow-hidden rounded-lg px-2 py-1 text-left text-[11px] leading-tight text-white ring-1 ring-white/20 transition-all duration-200 hover:z-20 hover:-translate-y-0.5 hover:shadow-xl ${
+                      className={`group/cls absolute left-1 right-1 z-10 overflow-hidden rounded-lg px-2 py-1 text-left text-[11px] leading-tight text-white transition-all duration-200 hover:z-20 hover:-translate-y-0.5 hover:shadow-xl ${
                         c.myStatus === "booked"
-                          ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-600/30"
-                          : "bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/25"
+                          ? "bg-gradient-to-br from-ink-800 to-ink-900 shadow-lg shadow-ink-900/30 ring-1 ring-brand-400/50"
+                          : "bg-gradient-to-br from-ink-700 to-ink-900 shadow-md shadow-ink-900/25 ring-1 ring-white/15"
                       }`}
                     >
                       <span className="block truncate font-bold">{format(start, "h:mm")} {c.title}</span>
@@ -537,7 +537,7 @@ export function WeekCalendar({
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={() => setSelectedClass(null)}>
           <div className="w-full max-w-sm rounded-t-2xl bg-white p-6 shadow-xl dark:bg-ink-800 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-2 flex items-center justify-between">
-              <span className="badge bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200">Group class</span>
+              <span className="badge bg-gradient-to-r from-ink-700 to-ink-900 text-white">Group class</span>
               <button onClick={() => setSelectedClass(null)} className="btn-ghost p-1" aria-label="Close">
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
@@ -553,7 +553,7 @@ export function WeekCalendar({
             </p>
 
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">
-              <div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.min(100, (selectedClass.booked / Math.max(1, selectedClass.capacity)) * 100)}%` }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-ink-700 to-ink-900 dark:from-ink-600 dark:to-ink-800" style={{ width: `${Math.min(100, (selectedClass.booked / Math.max(1, selectedClass.capacity)) * 100)}%` }} />
             </div>
 
             {/* Anyone with app access can book a group class — the only exception
