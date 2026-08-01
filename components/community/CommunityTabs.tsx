@@ -14,17 +14,17 @@ const TABS = [
 export function CommunityTabs() {
   const pathname = usePathname();
   return (
-    <div className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-white/10">
+    <div className="mb-6 inline-flex flex-wrap gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
       {TABS.map((t) => {
         const active = pathname === t.href;
         return (
           <Link
             key={t.href}
             href={t.href}
-            className={`-mb-px border-b-2 px-3 py-2 text-sm font-medium ${
+            className={`rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all duration-150 ${
               active
-                ? "border-brand-600 text-brand-700 dark:border-brand-400 dark:text-brand-300"
-                : "border-transparent text-slate-500 hover:text-ink-900 dark:hover:text-white"
+                ? "bg-white text-brand-700 shadow-sm dark:bg-white/10 dark:text-brand-200"
+                : "text-slate-500 hover:text-ink-900 dark:hover:text-white"
             }`}
           >
             {t.label}

@@ -22,13 +22,17 @@ export type PostRow = {
 export const POST_SELECT =
   "*, author:author_id(id, full_name, avatar_url), post_tags(tagged_user_id, tagged:tagged_user_id(full_name)), post_likes(user_id), post_comments(id, author_id, body, created_at, author:author_id(id, full_name, avatar_url), comment_likes(user_id))";
 
-const KIND_STYLE: Record<string, { emoji: string; label: string; ring: string; chip: string }> = {
-  announcement: { emoji: "📢", label: "Announcement", ring: "border-l-4 border-l-amber-500 bg-amber-50/40 dark:bg-amber-500/5", chip: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200" },
-  shoutout: { emoji: "📣", label: "Shoutout", ring: "border-l-4 border-l-violet-500", chip: "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300" },
-  congrats: { emoji: "🎉", label: "Congrats", ring: "border-l-4 border-l-amber-500", chip: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" },
-  thank_you: { emoji: "🙏", label: "Thank you", ring: "border-l-4 border-l-emerald-500", chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" },
-  milestone: { emoji: "🏅", label: "Milestone", ring: "border-l-4 border-l-brand-500", chip: "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300" },
+const KIND_STYLE: Record<string, { emoji: string; label: string; bar: string; chip: string }> = {
+  announcement: { emoji: "📢", label: "Announcement", bar: "bg-gradient-to-b from-amber-400 to-orange-500", chip: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200" },
+  shoutout: { emoji: "📣", label: "Shoutout", bar: "bg-gradient-to-b from-violet-400 to-fuchsia-500", chip: "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300" },
+  congrats: { emoji: "🎉", label: "Congrats", bar: "bg-gradient-to-b from-amber-400 to-orange-500", chip: "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" },
+  thank_you: { emoji: "🙏", label: "Thank you", bar: "bg-gradient-to-b from-emerald-400 to-teal-500", chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" },
+  milestone: { emoji: "🏅", label: "Milestone", bar: "bg-gradient-to-b from-brand-400 to-brand-500", chip: "bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300" },
 };
+
+// Borderless, floating card surface reused across the feed.
+const FLOAT_CARD =
+  "rounded-2xl bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10";
 
 export function PostFeed({
   posts,
@@ -56,10 +60,10 @@ export function PostFeed({
   const ordered = [...posts.filter(isPinned), ...posts.filter((p) => !isPinned(p))];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <PostComposer people={people} myId={me.id} myName={me.full_name} myAvatar={me.avatar_url} isAdmin={isAdmin} channel={channel} variant={composerVariant} placeholder={composerPlaceholder} />
 
-      {posts.length === 0 && <div className="card p-10 text-center muted">{emptyText}</div>}
+      {posts.length === 0 && <div className={`${FLOAT_CARD} p-10 text-center muted`}>{emptyText}</div>}
 
       {ordered.map((p) => {
         const style = KIND_STYLE[p.kind];
@@ -70,7 +74,8 @@ export function PostFeed({
         const mine = p.author_id === me.id;
 
         return (
-          <div key={p.id} className={`card overflow-hidden ${style?.ring ?? ""}`}>
+          <div key={p.id} className={`group relative overflow-hidden transition-shadow duration-200 hover:shadow-[0_6px_16px_rgba(15,23,42,0.06),0_24px_52px_-20px_rgba(15,23,42,0.30)] ${FLOAT_CARD}`}>
+            {style && <span className={`absolute inset-y-0 left-0 w-1 ${style.bar}`} />}
             <div className="p-4">
               <div className="flex items-start gap-3">
                 <Avatar name={p.author?.full_name || "Member"} src={p.author?.avatar_url} size="md" />
@@ -104,22 +109,22 @@ export function PostFeed({
               <img src={p.image_url} alt="" className="max-h-[520px] w-full object-cover" />
             )}
 
-            <div className="flex items-center justify-between px-4 py-2 text-xs muted">
+            <div className="flex items-center justify-between px-4 pt-1 text-xs muted">
               <span>{likeCount > 0 ? `${likeCount} like${likeCount === 1 ? "" : "s"}` : ""}</span>
               <span>{comments.length > 0 ? `${comments.length} comment${comments.length === 1 ? "" : "s"}` : ""}</span>
             </div>
 
-            <div className="border-t border-slate-100 px-2 py-1 dark:border-white/10">
+            <div className="px-2 py-1">
               <form action={toggleLike}>
                 <input type="hidden" name="post_id" value={p.id} />
-                <button className={`flex w-full items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium ${liked ? "text-brand-600 dark:text-brand-300" : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"}`}>
-                  <svg className="h-5 w-5" fill={liked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                <button className={`flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm font-semibold transition-colors ${liked ? "bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-300" : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5"}`}>
+                  <svg className={`h-5 w-5 transition-transform ${liked ? "scale-110" : ""}`} fill={liked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
                   {liked ? "Liked" : "Like"}
                 </button>
               </form>
             </div>
 
-            <div className="space-y-3 border-t border-slate-100 px-4 py-3 dark:border-white/10">
+            <div className="space-y-3 bg-slate-50/70 px-4 py-3 dark:bg-white/[0.02]">
               {comments.map((c) => {
                 const cLiked = c.comment_likes.some((l) => l.user_id === me.id);
                 const cCount = c.comment_likes.length;
@@ -128,7 +133,7 @@ export function PostFeed({
                   <div key={c.id} className="flex items-start gap-2">
                     <Avatar name={c.author?.full_name || "Member"} src={c.author?.avatar_url} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <div className="inline-block rounded-2xl bg-slate-100 px-3 py-2 dark:bg-white/10">
+                      <div className="inline-block rounded-2xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-900/5 dark:bg-white/10 dark:ring-white/5">
                         <p className="text-sm font-semibold text-ink-900 dark:text-white">{c.author?.full_name || "Member"}</p>
                         <p className="text-sm text-ink-900 dark:text-white">{c.body}</p>
                       </div>

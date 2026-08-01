@@ -26,7 +26,7 @@ export function CheckInCard({ checkedInToday, streak }: { checkedInToday: boolea
   }
 
   return (
-    <div className="card-brand flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 p-5 text-white shadow-[0_10px_30px_-8px_rgba(10,137,187,0.5)] sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="font-semibold text-white">
           {done ? "You're checked in today ✅" : "Are you at the gym?"}

@@ -107,7 +107,7 @@ export function PostComposer({
   }
 
   return (
-    <div className="card p-4">
+    <div className="rounded-2xl bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10">
       <div className="flex gap-3">
         <Avatar name={myName} src={myAvatar} size="md" />
         <div className="flex-1">
@@ -168,7 +168,7 @@ export function PostComposer({
 
           {/* Tag picker */}
           {showTag && untaggedPeople.length > 0 && (
-            <div className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-slate-200 p-1 dark:border-white/10">
+            <div className="mt-2 max-h-40 overflow-y-auto rounded-xl bg-slate-50 p-1 shadow-inner dark:bg-white/5">
               {untaggedPeople.map((p) => (
                 <button
                   key={p.id}

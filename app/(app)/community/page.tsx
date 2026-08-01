@@ -41,27 +41,31 @@ export default async function FeedPage() {
         />
 
         {/* Right rail */}
-        <aside className="hidden space-y-4 lg:block">
+        <aside className="hidden space-y-4 self-start lg:sticky lg:top-6 lg:block">
           <CheckInCard checkedInToday={checkedInToday} streak={stats.current_streak} />
-          <div className="card-brand p-4">
-            <p className="text-xs uppercase tracking-wide text-white/70">Your points</p>
-            <p className="text-2xl font-bold text-white">{stats.total_points.toLocaleString()}</p>
-            <p className="text-xs text-white/70">Level {stats.level} · {stats.current_streak}🔥 streak</p>
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 p-5 text-white shadow-[0_10px_30px_-8px_rgba(10,137,187,0.5)]">
+            <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10 blur-xl" />
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/70">Your points</p>
+            <p className="mt-1 text-3xl font-extrabold tracking-tight">{stats.total_points.toLocaleString()}</p>
+            <p className="mt-0.5 text-xs font-medium text-white/80">Level {stats.level} · {stats.current_streak}🔥 streak</p>
           </div>
-          <div className="card p-4">
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-ink-900 dark:text-white">Top members</h2>
-              <Link href="/community/leaderboard" className="text-xs font-medium text-brand-600 hover:text-brand-700">Full board →</Link>
+          <div className="rounded-2xl bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-bold text-ink-900 dark:text-white">Top members</h2>
+              <Link href="/community/leaderboard" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Full board →</Link>
             </div>
             <div className="space-y-1">
-              {leaders.map((r, i) => (
-                <div key={r.user_id} className="flex items-center gap-2">
-                  <span className="w-4 text-center text-xs font-bold text-brand-600 dark:text-brand-300">{i + 1}</span>
+              {leaders.map((r, i) => {
+                const medal = ["bg-gradient-to-br from-amber-300 to-yellow-500 text-white shadow-sm", "bg-gradient-to-br from-slate-300 to-slate-400 text-white shadow-sm", "bg-gradient-to-br from-amber-600 to-orange-700 text-white shadow-sm"][i] ?? "text-slate-400";
+                return (
+                <div key={r.user_id} className="flex items-center gap-2.5 rounded-xl p-1.5 transition-colors hover:bg-slate-50 dark:hover:bg-white/5">
+                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${medal}`}>{i + 1}</span>
                   <Avatar name={r.profile?.full_name || "Member"} src={r.profile?.avatar_url} size="sm" />
-                  <span className="min-w-0 flex-1 truncate text-sm text-ink-900 dark:text-white">{r.profile?.full_name || "Member"}</span>
-                  <span className="text-xs font-semibold muted">{r.total_points.toLocaleString()}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-900 dark:text-white">{r.profile?.full_name || "Member"}</span>
+                  <span className="text-xs font-bold text-brand-600 dark:text-brand-300">{r.total_points.toLocaleString()}</span>
                 </div>
-              ))}
+                );
+              })}
               {leaders.length === 0 && <p className="text-sm muted">No members ranked yet.</p>}
             </div>
           </div>
