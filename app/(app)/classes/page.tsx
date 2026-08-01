@@ -7,7 +7,7 @@ import { ClassRoster } from "@/components/ClassRoster";
 import { ClassJoinButton } from "@/components/ClassJoinButton";
 import { deleteClass, generateSchedule } from "@/app/(app)/classes/actions";
 import { dayLabel, timeRange } from "@/lib/format";
-import { HYPE, ROOM, FULL_ROOM, randomOf } from "@/lib/hype";
+import { HYPE, randomOf } from "@/lib/hype";
 
 type Booking = { client_id: string; status: string; client: { full_name: string; avatar_url: string | null } | null };
 type ClassRow = {
@@ -67,7 +67,11 @@ export default async function ClassesPage() {
           const spotsLeft = Math.max(0, c.capacity - booked.length);
           const full = spotsLeft <= 0;
           const pct = Math.min(100, Math.round((booked.length / Math.max(1, c.capacity)) * 100));
-          const encouragement = full ? FULL_ROOM : myStatus ? "So glad you're here 💙" : randomOf(ROOM);
+          const encouragement =
+            myStatus === "waitlisted" ? "You're on the waitlist"
+            : myStatus ? "✓ You're coming"
+            : full ? "Class full · join the waitlist"
+            : `${spotsLeft} ${spotsLeft === 1 ? "spot" : "spots"} left`;
 
           return (
             <div key={c.id} className="card-brand flex flex-col p-5">
