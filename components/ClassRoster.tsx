@@ -6,19 +6,22 @@ type Member = { full_name: string; avatar_url: string | null };
 /**
  * "N coming" count that, on hover/focus, fans the members out along an arc.
  * Pure CSS + inline transforms — works in a Server Component, no client JS.
+ * `onBrand` styles the trigger for a blue (branded) card background.
  */
 export function ClassRoster({
   booked,
   waitlisted = [],
+  onBrand = false,
 }: {
   booked: Attendee[];
   waitlisted?: Attendee[];
+  onBrand?: boolean;
 }) {
   const going = booked.filter(Boolean) as Member[];
   const wait = waitlisted.filter(Boolean) as Member[];
 
   if (going.length === 0) {
-    return <span className="text-xs muted">Be the first in! 💪</span>;
+    return <span className={`text-xs ${onBrand ? "text-white/80" : "muted"}`}>Be the first in! 💪</span>;
   }
 
   // Arc geometry.
@@ -39,30 +42,33 @@ export function ClassRoster({
     return { p, x: Math.round(R * Math.sin(ang)), y: Math.round(-R * Math.cos(ang)), i };
   });
 
+  const chipClass = onBrand
+    ? "bg-white/15 ring-white/40"
+    : "bg-brand-50 ring-brand-200 dark:bg-brand-500/15";
+  const ringClass = onBrand ? "ring-white/40" : "ring-brand-50 dark:ring-transparent";
+  const countClass = onBrand ? "text-white" : "text-brand-700 dark:text-brand-300";
+
   return (
     <span className="group relative inline-block">
       {/* Trigger: overlapped avatars + count */}
-      <span
-        tabIndex={0}
-        className="inline-flex cursor-default items-center gap-2 rounded-full bg-brand-50 py-0.5 pl-0.5 pr-2.5 outline-none ring-brand-200 focus:ring-2 dark:bg-brand-500/15"
-      >
+      <span tabIndex={0} className={`inline-flex cursor-default items-center gap-2 rounded-full py-0.5 pl-0.5 pr-2.5 outline-none focus:ring-2 ${chipClass}`}>
         <span className="flex -space-x-2">
           {going.slice(0, 4).map((p, i) => (
-            <span key={i} className="rounded-full ring-2 ring-brand-50 dark:ring-transparent">
+            <span key={i} className={`rounded-full ring-2 ${ringClass}`}>
               <Avatar name={p.full_name} src={p.avatar_url} size="sm" />
             </span>
           ))}
         </span>
-        <span className="text-xs font-semibold text-brand-700 dark:text-brand-300">{going.length} coming</span>
+        <span className={`text-xs font-semibold ${countClass}`}>{going.length} coming</span>
       </span>
 
-      {/* Fan-out popover */}
+      {/* Fan-out popover (always a light floating card) */}
       <span
         className="pointer-events-none invisible absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
         style={{ width: W + 28 }}
       >
         <span className="block rounded-2xl border border-slate-200 bg-white p-3 shadow-xl dark:border-white/10 dark:bg-ink-800">
-          <span className="mb-1 block text-center text-[11px] font-semibold uppercase tracking-wide muted">
+          <span className="mb-1 block text-center text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Who&apos;s crushing it 💪
           </span>
 
@@ -92,13 +98,13 @@ export function ClassRoster({
             ))}
           </span>
 
-          <span className="mt-1 block text-center text-xs muted">
+          <span className="mt-1 block text-center text-xs text-slate-500 dark:text-slate-400">
             {going.map((p) => p.full_name.split(" ")[0]).join(", ")}
             {extra > 0 ? ` +${extra} more` : ""}
           </span>
 
           {wait.length > 0 && (
-            <span className="mt-2 block border-t border-slate-100 pt-2 text-center text-[11px] muted dark:border-white/10">
+            <span className="mt-2 block border-t border-slate-100 pt-2 text-center text-[11px] text-slate-500 dark:border-white/10 dark:text-slate-400">
               Waitlist: {wait.map((p) => p.full_name.split(" ")[0]).join(", ")}
             </span>
           )}
