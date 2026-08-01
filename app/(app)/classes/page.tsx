@@ -3,7 +3,7 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { NewClassDialog } from "@/components/NewClassDialog";
-import { bookClass, cancelBooking, deleteClass } from "@/app/(app)/classes/actions";
+import { bookClass, cancelBooking, deleteClass, generateSchedule } from "@/app/(app)/classes/actions";
 import { dayLabel, timeRange } from "@/lib/format";
 
 type Booking = { client_id: string; status: string; client: { full_name: string } | null };
@@ -24,6 +24,7 @@ export default async function ClassesPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
   const isTrainer = profile.role === "trainer";
+  const canManage = isTrainer || profile.is_admin;
 
   const { data } = await supabase
     .from("classes")
@@ -37,8 +38,17 @@ export default async function ClassesPage() {
     <>
       <PageHeader
         title="Classes"
-        subtitle={isTrainer ? "Create and manage group sessions." : "Book group sessions at the gym."}
-        action={isTrainer ? <NewClassDialog defaultDate={format(new Date(), "yyyy-MM-dd")} /> : undefined}
+        subtitle={canManage ? "Create and manage group sessions." : "Book group sessions at the gym."}
+        action={
+          canManage ? (
+            <div className="flex flex-wrap gap-2">
+              <form action={generateSchedule}>
+                <button className="btn-secondary">Generate 2-week schedule</button>
+              </form>
+              <NewClassDialog defaultDate={format(new Date(), "yyyy-MM-dd")} />
+            </div>
+          ) : undefined
+        }
       />
 
       {classes.length === 0 && (

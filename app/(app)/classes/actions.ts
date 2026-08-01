@@ -50,6 +50,15 @@ export async function deleteClass(formData: FormData) {
   revalidatePath("/classes");
 }
 
+export async function generateSchedule() {
+  const profile = await requireProfile();
+  if (profile.role !== "trainer" && !profile.is_admin) return;
+  const supabase = await createClient();
+  await supabase.rpc("generate_class_schedule", { p_days: 14 });
+  revalidatePath("/classes");
+  revalidatePath("/calendar");
+}
+
 export async function bookClass(formData: FormData) {
   const profile = await requireProfile();
   const supabase = await createClient();

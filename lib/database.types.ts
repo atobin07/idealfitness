@@ -171,6 +171,7 @@ export type Database = {
     Views: { [_ in never]: never }
     Functions: {
       current_user_role: { Args: never; Returns: Database["public"]["Enums"]["user_role"] }
+      generate_class_schedule: { Args: { p_days: number }; Returns: number }
       is_admin: { Args: never; Returns: boolean }
       notify: { Args: { nbody: string; nlink: string; ntitle: string; ntype: string; target: string }; Returns: undefined }
     }
