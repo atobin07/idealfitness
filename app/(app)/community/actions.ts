@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import type { ChallengeMetric, PostKind } from "@/lib/database.types";
 
-const POST_KINDS: PostKind[] = ["post", "shoutout", "congrats", "thank_you", "milestone"];
+const POST_KINDS: PostKind[] = ["post", "shoutout", "congrats", "thank_you", "milestone", "announcement"];
 function asKind(v: unknown): PostKind {
   const s = String(v || "");
   return (POST_KINDS.includes(s as PostKind) ? s : "post") as PostKind;
@@ -29,6 +29,7 @@ export async function checkIn(): Promise<{ already: boolean; streak: number; poi
   const { data, error } = await supabase.rpc("do_checkin");
   if (error) return { error: error.message };
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
   revalidatePath("/dashboard");
   return data as { already: boolean; streak: number; points: number };
 }
@@ -41,6 +42,7 @@ export async function giveKudos(formData: FormData) {
   if (!activityId) return;
   await supabase.rpc("give_kudos", { p_activity: activityId });
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 // ---- Challenges --------------------------------------------------------
@@ -80,6 +82,7 @@ export async function joinChallenge(formData: FormData) {
   await supabase.from("challenge_participants").upsert({ challenge_id: id, user_id: profile.id }, { onConflict: "challenge_id,user_id" });
   revalidatePath("/community/challenges");
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function leaveChallenge(formData: FormData) {
@@ -90,6 +93,7 @@ export async function leaveChallenge(formData: FormData) {
   await supabase.from("challenge_participants").delete().eq("challenge_id", id).eq("user_id", profile.id);
   revalidatePath("/community/challenges");
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 // ---- Duels -------------------------------------------------------------
@@ -173,14 +177,16 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
   const supabase = await createClient();
   const body = String(formData.get("body") || "").trim();
   const imageUrl = String(formData.get("image_url") || "").trim() || null;
-  const kind = asKind(formData.get("kind"));
+  let kind = asKind(formData.get("kind"));
+  if (kind === "announcement" && !profile.is_admin) kind = "post"; // only admins broadcast
+  const channel = String(formData.get("channel") || "feed") === "pets" ? "pets" : "feed";
   const tagged = formData.getAll("tagged_ids").map(String).filter((id) => id && id !== profile.id);
 
   if (!body && !imageUrl) return { error: "Write something or add a photo." };
 
   const { data: post, error } = await supabase
     .from("posts")
-    .insert({ author_id: profile.id, kind, body: body || null, image_url: imageUrl })
+    .insert({ author_id: profile.id, kind, channel, body: body || null, image_url: imageUrl })
     .select("id")
     .single();
   if (error) return { error: error.message };
@@ -189,6 +195,7 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
     await supabase.from("post_tags").insert(tagged.map((id) => ({ post_id: post.id, tagged_user_id: id })));
   }
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
   return { ok: true };
 }
 
@@ -199,6 +206,7 @@ export async function deletePost(formData: FormData) {
   if (!id) return;
   await supabase.from("posts").delete().eq("id", id).eq("author_id", profile.id);
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function toggleLike(formData: FormData) {
@@ -215,6 +223,7 @@ export async function toggleLike(formData: FormData) {
   if (existing) await supabase.from("post_likes").delete().eq("id", existing.id);
   else await supabase.from("post_likes").insert({ post_id: postId, user_id: profile.id });
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function addComment(formData: FormData) {
@@ -225,6 +234,7 @@ export async function addComment(formData: FormData) {
   if (!postId || !body) return;
   await supabase.from("post_comments").insert({ post_id: postId, author_id: profile.id, body });
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function deleteComment(formData: FormData) {
@@ -234,6 +244,7 @@ export async function deleteComment(formData: FormData) {
   if (!id) return;
   await supabase.from("post_comments").delete().eq("id", id).eq("author_id", profile.id);
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function toggleCommentLike(formData: FormData) {
@@ -250,6 +261,7 @@ export async function toggleCommentLike(formData: FormData) {
   if (existing) await supabase.from("comment_likes").delete().eq("id", existing.id);
   else await supabase.from("comment_likes").insert({ comment_id: commentId, user_id: profile.id });
   revalidatePath("/community");
+  revalidatePath("/animal-kingdom");
 }
 
 export async function joinPartnerGoal(formData: FormData) {

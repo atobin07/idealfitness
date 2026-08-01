@@ -264,9 +264,9 @@ export type Database = {
         ]
       }
       posts: {
-        Row: { id: string; author_id: string; kind: Database["public"]["Enums"]["post_kind"]; body: string | null; image_url: string | null; created_at: string; updated_at: string }
-        Insert: { id?: string; author_id: string; kind?: Database["public"]["Enums"]["post_kind"]; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
-        Update: { id?: string; author_id?: string; kind?: Database["public"]["Enums"]["post_kind"]; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
+        Row: { id: string; author_id: string; kind: Database["public"]["Enums"]["post_kind"]; channel: string; body: string | null; image_url: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; author_id: string; kind?: Database["public"]["Enums"]["post_kind"]; channel?: string; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
+        Update: { id?: string; author_id?: string; kind?: Database["public"]["Enums"]["post_kind"]; channel?: string; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
         Relationships: [{ foreignKeyName: "posts_author_id_fkey"; columns: ["author_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
       post_tags: {
@@ -326,6 +326,39 @@ export type Database = {
         Update: { user_id?: string; intro?: string | null; current_goal?: string | null; hometown?: string | null; occupation?: string | null; favorite_color?: string | null; favorite_food?: string | null; favorite_music?: string | null; favorite_decade?: string | null; favorite_movie?: string | null; hobbies?: string | null; dream_vacation?: string | null; pets?: string | null; early_bird_or_night_owl?: string | null; coffee_or_tea?: string | null; fun_fact?: string | null; favorite_workout_song?: string | null; favorite_movement?: string | null; favorite_training_day?: string | null; updated_at?: string }
         Relationships: [{ foreignKeyName: "member_profiles_user_id_fkey"; columns: ["user_id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
+      discussions: {
+        Row: { id: string; prompt: string; details: string | null; status: string; conclusion: string | null; created_by: string; created_at: string; archived_at: string | null }
+        Insert: { id?: string; prompt: string; details?: string | null; status?: string; conclusion?: string | null; created_by: string; created_at?: string; archived_at?: string | null }
+        Update: { id?: string; prompt?: string; details?: string | null; status?: string; conclusion?: string | null; created_by?: string; created_at?: string; archived_at?: string | null }
+        Relationships: [{ foreignKeyName: "discussions_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      discussion_responses: {
+        Row: { id: string; discussion_id: string; user_id: string; body: string; created_at: string }
+        Insert: { id?: string; discussion_id: string; user_id: string; body: string; created_at?: string }
+        Update: { id?: string; discussion_id?: string; user_id?: string; body?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "discussion_responses_discussion_id_fkey"; columns: ["discussion_id"]; isOneToOne: false; referencedRelation: "discussions"; referencedColumns: ["id"] },
+          { foreignKeyName: "discussion_responses_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      discussion_response_likes: {
+        Row: { id: string; response_id: string; user_id: string; created_at: string }
+        Insert: { id?: string; response_id: string; user_id: string; created_at?: string }
+        Update: { id?: string; response_id?: string; user_id?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "discussion_response_likes_response_id_fkey"; columns: ["response_id"]; isOneToOne: false; referencedRelation: "discussion_responses"; referencedColumns: ["id"] },
+          { foreignKeyName: "discussion_response_likes_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      feedback: {
+        Row: { id: string; from_user_id: string | null; is_anonymous: boolean; audience: string; trainer_id: string | null; category: string | null; body: string; status: string; created_at: string }
+        Insert: { id?: string; from_user_id?: string | null; is_anonymous?: boolean; audience: string; trainer_id?: string | null; category?: string | null; body: string; status?: string; created_at?: string }
+        Update: { id?: string; from_user_id?: string | null; is_anonymous?: boolean; audience?: string; trainer_id?: string | null; category?: string | null; body?: string; status?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "feedback_from_user_id_fkey"; columns: ["from_user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "feedback_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -349,7 +382,7 @@ export type Database = {
       goal_status: "active" | "achieved" | "archived"
       invoice_status: "due" | "paid" | "void"
       package_status: "active" | "expired" | "cancelled"
-      post_kind: "post" | "shoutout" | "congrats" | "thank_you" | "milestone"
+      post_kind: "post" | "shoutout" | "congrats" | "thank_you" | "milestone" | "announcement"
       relationship_status: "active" | "inactive"
       rsvp_status: "going" | "maybe" | "cant"
       session_status: "scheduled" | "completed" | "cancelled" | "no_show"

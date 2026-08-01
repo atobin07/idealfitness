@@ -9,11 +9,12 @@ import type { PostKind } from "@/lib/database.types";
 
 type Person = { id: string; full_name: string };
 
-const KINDS: { value: PostKind; label: string; emoji: string }[] = [
+const KINDS: { value: PostKind; label: string; emoji: string; adminOnly?: boolean }[] = [
   { value: "post", label: "Post", emoji: "📝" },
   { value: "shoutout", label: "Shoutout", emoji: "📣" },
   { value: "congrats", label: "Congrats", emoji: "🎉" },
   { value: "thank_you", label: "Thank you", emoji: "🙏" },
+  { value: "announcement", label: "Announcement", emoji: "📢", adminOnly: true },
 ];
 
 const PLACEHOLDERS: Record<PostKind, string> = {
@@ -22,9 +23,30 @@ const PLACEHOLDERS: Record<PostKind, string> = {
   congrats: "Congratulate someone on their progress…",
   thank_you: "Say thanks to someone who helped you…",
   milestone: "Share a milestone…",
+  announcement: "Broadcast an announcement to the whole gym…",
 };
 
-export function PostComposer({ people, myId, myName, myAvatar }: { people: Person[]; myId: string; myName: string; myAvatar?: string | null }) {
+export function PostComposer({
+  people,
+  myId,
+  myName,
+  myAvatar,
+  isAdmin = false,
+  channel = "feed",
+  variant = "full",
+  placeholder,
+}: {
+  people: Person[];
+  myId: string;
+  myName: string;
+  myAvatar?: string | null;
+  isAdmin?: boolean;
+  channel?: string;
+  variant?: "full" | "simple";
+  placeholder?: string;
+}) {
+  const showKinds = variant !== "simple";
+  const kinds = KINDS.filter((k) => !k.adminOnly || isAdmin);
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [kind, setKind] = useState<PostKind>("post");
@@ -61,7 +83,8 @@ export function PostComposer({ people, myId, myName, myAvatar }: { people: Perso
         imageUrl = supabase.storage.from("post-media").getPublicUrl(path).data.publicUrl;
       }
       const fd = new FormData();
-      fd.set("kind", kind);
+      fd.set("kind", showKinds ? kind : "post");
+      fd.set("channel", channel);
       fd.set("body", body);
       if (imageUrl) fd.set("image_url", imageUrl);
       for (const t of tagged) fd.append("tagged_ids", t.id);
@@ -89,8 +112,9 @@ export function PostComposer({ people, myId, myName, myAvatar }: { people: Perso
         <Avatar name={myName} src={myAvatar} size="md" />
         <div className="flex-1">
           {/* Kind pills */}
+          {showKinds && (
           <div className="mb-2 flex flex-wrap gap-1.5">
-            {KINDS.map((k) => (
+            {kinds.map((k) => (
               <button
                 key={k.value}
                 onClick={() => setKind(k.value)}
@@ -104,12 +128,13 @@ export function PostComposer({ people, myId, myName, myAvatar }: { people: Perso
               </button>
             ))}
           </div>
+          )}
 
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={3}
-            placeholder={PLACEHOLDERS[kind]}
+            placeholder={placeholder ?? PLACEHOLDERS[kind]}
             className="input resize-none"
           />
 
