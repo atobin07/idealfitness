@@ -81,12 +81,21 @@ export type Database = {
         ]
       }
       messages: {
-        Row: { body: string; created_at: string; id: string; read_at: string | null; recipient_id: string; sender_id: string }
-        Insert: { body: string; created_at?: string; id?: string; read_at?: string | null; recipient_id: string; sender_id: string }
-        Update: { body?: string; created_at?: string; id?: string; read_at?: string | null; recipient_id?: string; sender_id?: string }
+        Row: { body: string | null; created_at: string; id: string; read_at: string | null; recipient_id: string; sender_id: string; attachment_url: string | null; attachment_type: string | null; attachment_name: string | null; font: string }
+        Insert: { body?: string | null; created_at?: string; id?: string; read_at?: string | null; recipient_id: string; sender_id: string; attachment_url?: string | null; attachment_type?: string | null; attachment_name?: string | null; font?: string }
+        Update: { body?: string | null; created_at?: string; id?: string; read_at?: string | null; recipient_id?: string; sender_id?: string; attachment_url?: string | null; attachment_type?: string | null; attachment_name?: string | null; font?: string }
         Relationships: [
           { foreignKeyName: "messages_recipient_id_fkey"; columns: ["recipient_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
           { foreignKeyName: "messages_sender_id_fkey"; columns: ["sender_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      message_reactions: {
+        Row: { id: string; message_id: string; user_id: string; emoji: string; created_at: string }
+        Insert: { id?: string; message_id: string; user_id: string; emoji: string; created_at?: string }
+        Update: { id?: string; message_id?: string; user_id?: string; emoji?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "message_reactions_message_id_fkey"; columns: ["message_id"]; isOneToOne: false; referencedRelation: "messages"; referencedColumns: ["id"] },
+          { foreignKeyName: "message_reactions_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
       notifications: {

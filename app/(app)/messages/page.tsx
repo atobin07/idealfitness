@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { MessageComposer } from "@/components/MessageComposer";
-import { MessageThread } from "@/components/MessageThread";
+import { MessageThread, type ChatMessage } from "@/components/MessageThread";
 import { markConversationRead } from "@/app/(app)/messages/actions";
-import type { Message, Profile } from "@/lib/database.types";
+import type { Profile } from "@/lib/database.types";
 
 type Contact = { id: string; full_name: string; email: string | null };
 
@@ -61,17 +61,17 @@ export default async function MessagesPage({
   const activeId = withId && contacts.some((c) => c.id === withId) ? withId : contacts[0]?.id;
   const active = contacts.find((c) => c.id === activeId);
 
-  let thread: Message[] = [];
+  let thread: ChatMessage[] = [];
   if (activeId) {
     const { data } = await supabase
       .from("messages")
-      .select("*")
+      .select("*, message_reactions(emoji, user_id)")
       .or(
         `and(sender_id.eq.${profile.id},recipient_id.eq.${activeId}),and(sender_id.eq.${activeId},recipient_id.eq.${profile.id})`
       )
       .order("created_at", { ascending: true })
       .limit(200);
-    thread = (data ?? []) as Message[];
+    thread = (data ?? []) as unknown as ChatMessage[];
     await markConversationRead(activeId);
   }
 
@@ -126,7 +126,11 @@ export default async function MessagesPage({
 
               <MessageThread initial={thread} myId={profile.id} otherId={active.id} />
 
-              <MessageComposer recipientId={active.id} />
+              <MessageComposer
+                recipientId={active.id}
+                myId={profile.id}
+                members={contacts.map((c) => ({ id: c.id, full_name: c.full_name }))}
+              />
             </>
           )}
         </div>
