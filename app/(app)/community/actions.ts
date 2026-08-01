@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
-import type { ChallengeMetric } from "@/lib/database.types";
+import type { ChallengeMetric, PostKind } from "@/lib/database.types";
+
+const POST_KINDS: PostKind[] = ["post", "shoutout", "congrats", "thank_you", "milestone"];
+function asKind(v: unknown): PostKind {
+  const s = String(v || "");
+  return (POST_KINDS.includes(s as PostKind) ? s : "post") as PostKind;
+}
 
 const METRICS: ChallengeMetric[] = ["checkins", "sessions", "classes", "workouts", "points"];
 function asMetric(v: unknown): ChallengeMetric {
@@ -184,6 +190,91 @@ export async function createPartnerGoal(_prev: FormState, formData: FormData): P
   }
   revalidatePath("/community/goals");
   return { ok: true };
+}
+
+// ---- Feed: posts, likes, comments, tags --------------------------------
+export async function createPost(_prev: FormState, formData: FormData): Promise<FormState> {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const body = String(formData.get("body") || "").trim();
+  const imageUrl = String(formData.get("image_url") || "").trim() || null;
+  const kind = asKind(formData.get("kind"));
+  const tagged = formData.getAll("tagged_ids").map(String).filter((id) => id && id !== profile.id);
+
+  if (!body && !imageUrl) return { error: "Write something or add a photo." };
+
+  const { data: post, error } = await supabase
+    .from("posts")
+    .insert({ author_id: profile.id, kind, body: body || null, image_url: imageUrl })
+    .select("id")
+    .single();
+  if (error) return { error: error.message };
+
+  if (post && tagged.length > 0) {
+    await supabase.from("post_tags").insert(tagged.map((id) => ({ post_id: post.id, tagged_user_id: id })));
+  }
+  revalidatePath("/community");
+  return { ok: true };
+}
+
+export async function deletePost(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  await supabase.from("posts").delete().eq("id", id).eq("author_id", profile.id);
+  revalidatePath("/community");
+}
+
+export async function toggleLike(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const postId = String(formData.get("post_id") || "");
+  if (!postId) return;
+  const { data: existing } = await supabase
+    .from("post_likes")
+    .select("id")
+    .eq("post_id", postId)
+    .eq("user_id", profile.id)
+    .maybeSingle();
+  if (existing) await supabase.from("post_likes").delete().eq("id", existing.id);
+  else await supabase.from("post_likes").insert({ post_id: postId, user_id: profile.id });
+  revalidatePath("/community");
+}
+
+export async function addComment(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const postId = String(formData.get("post_id") || "");
+  const body = String(formData.get("body") || "").trim();
+  if (!postId || !body) return;
+  await supabase.from("post_comments").insert({ post_id: postId, author_id: profile.id, body });
+  revalidatePath("/community");
+}
+
+export async function deleteComment(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  await supabase.from("post_comments").delete().eq("id", id).eq("author_id", profile.id);
+  revalidatePath("/community");
+}
+
+export async function toggleCommentLike(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const commentId = String(formData.get("comment_id") || "");
+  if (!commentId) return;
+  const { data: existing } = await supabase
+    .from("comment_likes")
+    .select("id")
+    .eq("comment_id", commentId)
+    .eq("user_id", profile.id)
+    .maybeSingle();
+  if (existing) await supabase.from("comment_likes").delete().eq("id", existing.id);
+  else await supabase.from("comment_likes").insert({ comment_id: commentId, user_id: profile.id });
+  revalidatePath("/community");
 }
 
 export async function joinPartnerGoal(formData: FormData) {

@@ -263,6 +263,48 @@ export type Database = {
           { foreignKeyName: "partner_goal_members_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      posts: {
+        Row: { id: string; author_id: string; kind: Database["public"]["Enums"]["post_kind"]; body: string | null; image_url: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; author_id: string; kind?: Database["public"]["Enums"]["post_kind"]; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
+        Update: { id?: string; author_id?: string; kind?: Database["public"]["Enums"]["post_kind"]; body?: string | null; image_url?: string | null; created_at?: string; updated_at?: string }
+        Relationships: [{ foreignKeyName: "posts_author_id_fkey"; columns: ["author_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      post_tags: {
+        Row: { id: string; post_id: string; tagged_user_id: string; created_at: string }
+        Insert: { id?: string; post_id: string; tagged_user_id: string; created_at?: string }
+        Update: { id?: string; post_id?: string; tagged_user_id?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "post_tags_post_id_fkey"; columns: ["post_id"]; isOneToOne: false; referencedRelation: "posts"; referencedColumns: ["id"] },
+          { foreignKeyName: "post_tags_tagged_user_id_fkey"; columns: ["tagged_user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      post_likes: {
+        Row: { id: string; post_id: string; user_id: string; created_at: string }
+        Insert: { id?: string; post_id: string; user_id: string; created_at?: string }
+        Update: { id?: string; post_id?: string; user_id?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "post_likes_post_id_fkey"; columns: ["post_id"]; isOneToOne: false; referencedRelation: "posts"; referencedColumns: ["id"] },
+          { foreignKeyName: "post_likes_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      post_comments: {
+        Row: { id: string; post_id: string; author_id: string; body: string; created_at: string }
+        Insert: { id?: string; post_id: string; author_id: string; body: string; created_at?: string }
+        Update: { id?: string; post_id?: string; author_id?: string; body?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "post_comments_post_id_fkey"; columns: ["post_id"]; isOneToOne: false; referencedRelation: "posts"; referencedColumns: ["id"] },
+          { foreignKeyName: "post_comments_author_id_fkey"; columns: ["author_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      comment_likes: {
+        Row: { id: string; comment_id: string; user_id: string; created_at: string }
+        Insert: { id?: string; comment_id: string; user_id: string; created_at?: string }
+        Update: { id?: string; comment_id?: string; user_id?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "comment_likes_comment_id_fkey"; columns: ["comment_id"]; isOneToOne: false; referencedRelation: "post_comments"; referencedColumns: ["id"] },
+          { foreignKeyName: "comment_likes_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -285,6 +327,7 @@ export type Database = {
       goal_status: "active" | "achieved" | "archived"
       invoice_status: "due" | "paid" | "void"
       package_status: "active" | "expired" | "cancelled"
+      post_kind: "post" | "shoutout" | "congrats" | "thank_you" | "milestone"
       relationship_status: "active" | "inactive"
       session_status: "scheduled" | "completed" | "cancelled" | "no_show"
       user_role: "trainer" | "client"
@@ -341,3 +384,9 @@ export type ChallengeParticipant = Tbl["challenge_participants"]["Row"];
 export type Duel = Tbl["duels"]["Row"];
 export type PartnerGoal = Tbl["partner_goals"]["Row"];
 export type PartnerGoalMember = Tbl["partner_goal_members"]["Row"];
+export type PostKind = Database["public"]["Enums"]["post_kind"];
+export type Post = Tbl["posts"]["Row"];
+export type PostTag = Tbl["post_tags"]["Row"];
+export type PostLike = Tbl["post_likes"]["Row"];
+export type PostComment = Tbl["post_comments"]["Row"];
+export type CommentLike = Tbl["comment_likes"]["Row"];
