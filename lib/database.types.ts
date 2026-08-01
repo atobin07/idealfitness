@@ -167,6 +167,102 @@ export type Database = {
         Update: { created_at?: string; description?: string | null; id?: string; name?: string; trainer_id?: string; weeks?: number }
         Relationships: [{ foreignKeyName: "workout_plans_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
+      points_ledger: {
+        Row: { id: string; user_id: string; points: number; reason: string; ref_type: string | null; ref_id: string | null; created_at: string }
+        Insert: { id?: string; user_id: string; points: number; reason: string; ref_type?: string | null; ref_id?: string | null; created_at?: string }
+        Update: { id?: string; user_id?: string; points?: number; reason?: string; ref_type?: string | null; ref_id?: string | null; created_at?: string }
+        Relationships: [{ foreignKeyName: "points_ledger_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      member_stats: {
+        Row: { user_id: string; total_points: number; level: number; current_streak: number; longest_streak: number; last_checkin_date: string | null; checkins_count: number; updated_at: string }
+        Insert: { user_id: string; total_points?: number; level?: number; current_streak?: number; longest_streak?: number; last_checkin_date?: string | null; checkins_count?: number; updated_at?: string }
+        Update: { user_id?: string; total_points?: number; level?: number; current_streak?: number; longest_streak?: number; last_checkin_date?: string | null; checkins_count?: number; updated_at?: string }
+        Relationships: [{ foreignKeyName: "member_stats_user_id_fkey"; columns: ["user_id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      checkins: {
+        Row: { id: string; user_id: string; checkin_date: string; source: string; created_at: string }
+        Insert: { id?: string; user_id: string; checkin_date?: string; source?: string; created_at?: string }
+        Update: { id?: string; user_id?: string; checkin_date?: string; source?: string; created_at?: string }
+        Relationships: [{ foreignKeyName: "checkins_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      badges: {
+        Row: { id: string; name: string; description: string; icon: string; points_reward: number; sort: number }
+        Insert: { id: string; name: string; description: string; icon?: string; points_reward?: number; sort?: number }
+        Update: { id?: string; name?: string; description?: string; icon?: string; points_reward?: number; sort?: number }
+        Relationships: []
+      }
+      member_badges: {
+        Row: { id: string; user_id: string; badge_id: string; earned_at: string }
+        Insert: { id?: string; user_id: string; badge_id: string; earned_at?: string }
+        Update: { id?: string; user_id?: string; badge_id?: string; earned_at?: string }
+        Relationships: [
+          { foreignKeyName: "member_badges_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "member_badges_badge_id_fkey"; columns: ["badge_id"]; isOneToOne: false; referencedRelation: "badges"; referencedColumns: ["id"] },
+        ]
+      }
+      friendships: {
+        Row: { id: string; requester_id: string; addressee_id: string; status: string; created_at: string }
+        Insert: { id?: string; requester_id: string; addressee_id: string; status?: string; created_at?: string }
+        Update: { id?: string; requester_id?: string; addressee_id?: string; status?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "friendships_requester_id_fkey"; columns: ["requester_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "friendships_addressee_id_fkey"; columns: ["addressee_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      activity_events: {
+        Row: { id: string; user_id: string; type: string; title: string; body: string | null; visibility: string; created_at: string }
+        Insert: { id?: string; user_id: string; type: string; title: string; body?: string | null; visibility?: string; created_at?: string }
+        Update: { id?: string; user_id?: string; type?: string; title?: string; body?: string | null; visibility?: string; created_at?: string }
+        Relationships: [{ foreignKeyName: "activity_events_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      kudos: {
+        Row: { id: string; activity_id: string; user_id: string; created_at: string }
+        Insert: { id?: string; activity_id: string; user_id: string; created_at?: string }
+        Update: { id?: string; activity_id?: string; user_id?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "kudos_activity_id_fkey"; columns: ["activity_id"]; isOneToOne: false; referencedRelation: "activity_events"; referencedColumns: ["id"] },
+          { foreignKeyName: "kudos_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      challenges: {
+        Row: { id: string; title: string; description: string | null; metric: Database["public"]["Enums"]["challenge_metric"]; starts_at: string; ends_at: string; reward_points: number; created_by: string; created_at: string }
+        Insert: { id?: string; title: string; description?: string | null; metric?: Database["public"]["Enums"]["challenge_metric"]; starts_at: string; ends_at: string; reward_points?: number; created_by: string; created_at?: string }
+        Update: { id?: string; title?: string; description?: string | null; metric?: Database["public"]["Enums"]["challenge_metric"]; starts_at?: string; ends_at?: string; reward_points?: number; created_by?: string; created_at?: string }
+        Relationships: [{ foreignKeyName: "challenges_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      challenge_participants: {
+        Row: { id: string; challenge_id: string; user_id: string; joined_at: string }
+        Insert: { id?: string; challenge_id: string; user_id: string; joined_at?: string }
+        Update: { id?: string; challenge_id?: string; user_id?: string; joined_at?: string }
+        Relationships: [
+          { foreignKeyName: "challenge_participants_challenge_id_fkey"; columns: ["challenge_id"]; isOneToOne: false; referencedRelation: "challenges"; referencedColumns: ["id"] },
+          { foreignKeyName: "challenge_participants_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      duels: {
+        Row: { id: string; challenger_id: string; opponent_id: string; metric: Database["public"]["Enums"]["challenge_metric"]; starts_at: string; ends_at: string; status: Database["public"]["Enums"]["duel_status"]; winner_id: string | null; created_at: string }
+        Insert: { id?: string; challenger_id: string; opponent_id: string; metric?: Database["public"]["Enums"]["challenge_metric"]; starts_at: string; ends_at: string; status?: Database["public"]["Enums"]["duel_status"]; winner_id?: string | null; created_at?: string }
+        Update: { id?: string; challenger_id?: string; opponent_id?: string; metric?: Database["public"]["Enums"]["challenge_metric"]; starts_at?: string; ends_at?: string; status?: Database["public"]["Enums"]["duel_status"]; winner_id?: string | null; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "duels_challenger_id_fkey"; columns: ["challenger_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "duels_opponent_id_fkey"; columns: ["opponent_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      partner_goals: {
+        Row: { id: string; title: string; metric: Database["public"]["Enums"]["challenge_metric"]; target: number; starts_at: string; ends_at: string; status: string; created_by: string; created_at: string }
+        Insert: { id?: string; title: string; metric?: Database["public"]["Enums"]["challenge_metric"]; target?: number; starts_at?: string; ends_at: string; status?: string; created_by: string; created_at?: string }
+        Update: { id?: string; title?: string; metric?: Database["public"]["Enums"]["challenge_metric"]; target?: number; starts_at?: string; ends_at?: string; status?: string; created_by?: string; created_at?: string }
+        Relationships: [{ foreignKeyName: "partner_goals_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      partner_goal_members: {
+        Row: { id: string; goal_id: string; user_id: string; joined_at: string }
+        Insert: { id?: string; goal_id: string; user_id: string; joined_at?: string }
+        Update: { id?: string; goal_id?: string; user_id?: string; joined_at?: string }
+        Relationships: [
+          { foreignKeyName: "partner_goal_members_goal_id_fkey"; columns: ["goal_id"]; isOneToOne: false; referencedRelation: "partner_goals"; referencedColumns: ["id"] },
+          { foreignKeyName: "partner_goal_members_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -174,10 +270,18 @@ export type Database = {
       generate_class_schedule: { Args: { p_days: number }; Returns: number }
       is_admin: { Args: never; Returns: boolean }
       notify: { Args: { nbody: string; nlink: string; ntitle: string; ntype: string; target: string }; Returns: undefined }
+      do_checkin: { Args: never; Returns: Json }
+      give_kudos: { Args: { p_activity: string }; Returns: undefined }
+      settle_duel: { Args: { did: string }; Returns: undefined }
+      challenge_leaderboard: { Args: { cid: string }; Returns: { user_id: string; full_name: string; score: number }[] }
+      duel_scores: { Args: { did: string }; Returns: { challenger_score: number; opponent_score: number }[] }
+      partner_goal_progress: { Args: { gid: string }; Returns: number }
     }
     Enums: {
       assignment_status: "active" | "completed" | "paused"
       class_booking_status: "booked" | "waitlisted" | "cancelled" | "attended"
+      challenge_metric: "checkins" | "sessions" | "classes" | "workouts" | "points"
+      duel_status: "pending" | "active" | "completed" | "declined" | "cancelled"
       goal_status: "active" | "achieved" | "archived"
       invoice_status: "due" | "paid" | "void"
       package_status: "active" | "expired" | "cancelled"
@@ -221,3 +325,19 @@ export type ClientPackage = Tbl["client_packages"]["Row"];
 export type Invoice = Tbl["invoices"]["Row"];
 export type Notification = Tbl["notifications"]["Row"];
 export type GymSettings = Tbl["gym_settings"]["Row"];
+
+export type ChallengeMetric = Database["public"]["Enums"]["challenge_metric"];
+export type DuelStatus = Database["public"]["Enums"]["duel_status"];
+export type MemberStats = Tbl["member_stats"]["Row"];
+export type PointsLedger = Tbl["points_ledger"]["Row"];
+export type Checkin = Tbl["checkins"]["Row"];
+export type Badge = Tbl["badges"]["Row"];
+export type MemberBadge = Tbl["member_badges"]["Row"];
+export type Friendship = Tbl["friendships"]["Row"];
+export type ActivityEvent = Tbl["activity_events"]["Row"];
+export type Kudos = Tbl["kudos"]["Row"];
+export type Challenge = Tbl["challenges"]["Row"];
+export type ChallengeParticipant = Tbl["challenge_participants"]["Row"];
+export type Duel = Tbl["duels"]["Row"];
+export type PartnerGoal = Tbl["partner_goals"]["Row"];
+export type PartnerGoalMember = Tbl["partner_goal_members"]["Row"];

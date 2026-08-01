@@ -3,6 +3,7 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
+import { CheckInCard } from "@/components/community/CheckInCard";
 import { dayLabel, timeRange, statusBadge, statusLabel } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
 import type { Profile, Session } from "@/lib/database.types";
@@ -40,6 +41,13 @@ export default async function DashboardPage() {
       supabase.from("announcements").select("id, title, body, created_at").order("created_at", { ascending: false }).limit(3),
       supabase.from("classes").select("title, starts_at").gte("starts_at", nowIso).order("starts_at").limit(1).maybeSingle(),
     ]);
+
+  const { data: myStats } = await supabase
+    .from("member_stats")
+    .select("current_streak, last_checkin_date")
+    .eq("user_id", profile.id)
+    .maybeSingle();
+  const checkedInToday = myStats?.last_checkin_date === new Date().toISOString().slice(0, 10);
 
   const sessions = (upcoming ?? []) as SessionWithPeople[];
   const firstName = (profile.full_name || "there").split(" ")[0];
@@ -118,6 +126,8 @@ export default async function DashboardPage() {
         </section>
 
         <section className="space-y-6">
+          <CheckInCard checkedInToday={checkedInToday} streak={myStats?.current_streak ?? 0} />
+
           {nextClass && (
             <div className="card overflow-hidden">
               <div className="bg-gradient-to-br from-brand-500 to-brand-700 p-5 text-white">

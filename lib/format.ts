@@ -49,3 +49,27 @@ export function statusLabel(status: string): string {
     .map((s) => s[0].toUpperCase() + s.slice(1))
     .join(" ");
 }
+
+const METRIC_LABELS: Record<string, string> = {
+  checkins: "Check-ins",
+  sessions: "Training sessions",
+  classes: "Classes attended",
+  workouts: "Workouts logged",
+  points: "Points earned",
+};
+
+export function metricLabel(metric: string): string {
+  return METRIC_LABELS[metric] ?? metric;
+}
+
+export function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.round(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.round(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return format(new Date(iso), "MMM d");
+}
