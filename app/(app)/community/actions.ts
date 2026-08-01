@@ -43,31 +43,6 @@ export async function giveKudos(formData: FormData) {
   revalidatePath("/community");
 }
 
-// ---- Friends -----------------------------------------------------------
-export async function addFriend(formData: FormData) {
-  const profile = await requireProfile();
-  const supabase = await createClient();
-  const addressee = String(formData.get("addressee_id") || "");
-  if (!addressee || addressee === profile.id) return;
-  await supabase
-    .from("friendships")
-    .upsert({ requester_id: profile.id, addressee_id: addressee, status: "pending" }, { onConflict: "requester_id,addressee_id" });
-  revalidatePath("/community");
-  revalidatePath("/community/friends");
-}
-
-export async function respondFriend(formData: FormData) {
-  await requireProfile();
-  const supabase = await createClient();
-  const id = String(formData.get("id") || "");
-  const action = String(formData.get("action") || "");
-  if (!id) return;
-  if (action === "accept") await supabase.from("friendships").update({ status: "accepted" }).eq("id", id);
-  else await supabase.from("friendships").delete().eq("id", id);
-  revalidatePath("/community");
-  revalidatePath("/community/friends");
-}
-
 // ---- Challenges --------------------------------------------------------
 export async function createChallenge(_prev: FormState, formData: FormData): Promise<FormState> {
   const profile = await requireProfile();
