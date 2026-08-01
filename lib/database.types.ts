@@ -16,6 +16,15 @@ export type Database = {
         Update: { author_id?: string; body?: string; created_at?: string; id?: string; title?: string }
         Relationships: [{ foreignKeyName: "announcements_author_id_fkey"; columns: ["author_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
+      attendance: {
+        Row: { id: string; member_id: string; recorded_by: string | null; class_id: string | null; attended_on: string; status: Database["public"]["Enums"]["attendance_status"]; note: string | null; created_at: string }
+        Insert: { id?: string; member_id: string; recorded_by?: string | null; class_id?: string | null; attended_on?: string; status?: Database["public"]["Enums"]["attendance_status"]; note?: string | null; created_at?: string }
+        Update: { id?: string; member_id?: string; recorded_by?: string | null; class_id?: string | null; attended_on?: string; status?: Database["public"]["Enums"]["attendance_status"]; note?: string | null; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "attendance_member_id_fkey"; columns: ["member_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "attendance_class_id_fkey"; columns: ["class_id"]; isOneToOne: false; referencedRelation: "classes"; referencedColumns: ["id"] },
+        ]
+      }
       availability: {
         Row: { created_at: string; end_time: string; id: string; start_time: string; trainer_id: string; weekday: number }
         Insert: { created_at?: string; end_time: string; id?: string; start_time: string; trainer_id: string; weekday: number }
@@ -382,6 +391,8 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       notify: { Args: { nbody: string; nlink: string; ntitle: string; ntype: string; target: string }; Returns: undefined }
       do_checkin: { Args: never; Returns: Json }
+      is_staff: { Args: never; Returns: boolean }
+      record_attendance: { Args: { p_member: string; p_status: Database["public"]["Enums"]["attendance_status"]; p_class?: string | null; p_date?: string; p_note?: string | null }; Returns: Json }
       give_kudos: { Args: { p_activity: string }; Returns: undefined }
       settle_duel: { Args: { did: string }; Returns: undefined }
       challenge_leaderboard: { Args: { cid: string }; Returns: { user_id: string; full_name: string; score: number }[] }
@@ -390,6 +401,7 @@ export type Database = {
     }
     Enums: {
       assignment_status: "active" | "completed" | "paused"
+      attendance_status: "present" | "no_show" | "cancelled" | "late_cancel" | "excused"
       class_booking_status: "booked" | "waitlisted" | "cancelled" | "attended"
       challenge_metric: "checkins" | "sessions" | "classes" | "workouts" | "points"
       duel_status: "pending" | "active" | "completed" | "declined" | "cancelled"

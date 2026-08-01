@@ -31,6 +31,7 @@ const ICONS: Record<string, string> = {
   feedback: "M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z",
   pets: "M8.5 10.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 8a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm4.5 2.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 13c-2 0-3.5 1.6-3.5 3.2 0 1 .8 1.8 1.8 1.8h3.4c1 0 1.8-.8 1.8-1.8C15.5 14.6 14 13 12 13z",
   support: "M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z",
+  checkin: "M9 12l2 2 4-4m1-5a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2m2-1h4a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4a1 1 0 011-1z",
 };
 
 export function Sidebar({
@@ -68,6 +69,7 @@ export function Sidebar({
       title: "Training",
       items: [
         { href: "/workouts", label: "Workouts", icon: "workouts" },
+        ...(isTrainer ? [{ href: "/check-in", label: "Check-in", icon: "checkin" }] : []),
         ...(isTrainer ? [{ href: "/exercises", label: "Exercise library", icon: "exercises" }] : []),
         { href: "/progress", label: "Progress & goals", icon: "progress" },
       ],
