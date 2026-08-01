@@ -4,7 +4,7 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
-import { WeekCalendar, type CalClass, type CalSession } from "@/components/WeekCalendar";
+import { WeekCalendar, type CalClass, type CalSession, type AvailWindow } from "@/components/WeekCalendar";
 import { dayLabel, timeRange, statusBadge, statusLabel } from "@/lib/format";
 import type { Profile, Session } from "@/lib/database.types";
 
@@ -135,12 +135,33 @@ export default async function CalendarPage({
 
   const people = await bookablePeople(profile.id, profile.role);
 
+  // Sync the grid with trainer availability: coaches see their own windows,
+  // clients see the windows of the trainer(s) they're linked to.
+  const trainerIds = isTrainer ? [profile.id] : people.map((p) => p.id);
+  let avail: AvailWindow[] = [];
+  if (trainerIds.length > 0) {
+    const { data: availData } = await supabase
+      .from("availability")
+      .select("weekday, start_time, end_time")
+      .in("trainer_id", trainerIds);
+    avail = (availData ?? []).map((a) => ({
+      weekday: a.weekday,
+      startMin: toMinutes(a.start_time),
+      endMin: toMinutes(a.end_time),
+    }));
+  }
+
   return (
     <>
       <CalendarHeader view={view} anchor={anchor} />
-      <WeekCalendar days={days} sessions={sessions} classes={classes} role={profile.role} people={people} myId={profile.id} />
+      <WeekCalendar days={days} sessions={sessions} classes={classes} role={profile.role} people={people} myId={profile.id} avail={avail} />
     </>
   );
+}
+
+function toMinutes(t: string) {
+  const [h, m] = t.split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
 }
 
 function CalendarHeader({ view, anchor }: { view: string; anchor: Date }) {

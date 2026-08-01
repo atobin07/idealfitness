@@ -33,11 +33,45 @@ export type CalClass = {
 };
 
 type Person = { id: string; full_name: string };
+export type AvailWindow = { weekday: number; startMin: number; endMin: number };
 
 const START_HOUR = 6;
 const END_HOUR = 21;
 const PX_PER_HOUR = 52;
 const HOURS = Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i);
+const GRID_START = START_HOUR * 60;
+const GRID_END = END_HOUR * 60;
+
+// Given a weekday's availability windows, return the grey "outside hours" bands
+// (the complement of the merged available windows within the visible grid).
+function offHoursBands(weekday: number, avail: AvailWindow[]) {
+  const windows = avail
+    .filter((a) => a.weekday === weekday)
+    .map((a) => [Math.max(GRID_START, a.startMin), Math.min(GRID_END, a.endMin)] as [number, number])
+    .filter(([s, e]) => e > s)
+    .sort((a, b) => a[0] - b[0]);
+  const merged: [number, number][] = [];
+  for (const w of windows) {
+    const last = merged[merged.length - 1];
+    if (last && w[0] <= last[1]) last[1] = Math.max(last[1], w[1]);
+    else merged.push([...w]);
+  }
+  const bands: [number, number][] = [];
+  let cursor = GRID_START;
+  for (const [s, e] of merged) {
+    if (s > cursor) bands.push([cursor, s]);
+    cursor = Math.max(cursor, e);
+  }
+  if (cursor < GRID_END) bands.push([cursor, GRID_END]);
+  return bands.map(([s, e]) => ({
+    top: ((s - GRID_START) / 60) * PX_PER_HOUR,
+    height: ((e - s) / 60) * PX_PER_HOUR,
+  }));
+}
+
+function isAvailable(weekday: number, min: number, avail: AvailWindow[]) {
+  return avail.some((a) => a.weekday === weekday && min >= a.startMin && min < a.endMin);
+}
 
 function minutesFromTop(y: number) {
   const raw = (y / PX_PER_HOUR) * 60;
@@ -60,6 +94,7 @@ export function WeekCalendar({
   role,
   people,
   myId,
+  avail = [],
 }: {
   days: string[]; // yyyy-MM-dd for each column
   sessions: CalSession[];
@@ -67,12 +102,14 @@ export function WeekCalendar({
   role: UserRole;
   people: Person[];
   myId: string;
+  avail?: AvailWindow[];
 }) {
   const router = useRouter();
   const [prefill, setPrefill] = useState<{ date: string; time: string } | null>(null);
   const [selected, setSelected] = useState<CalSession | null>(null);
   const [selectedClass, setSelectedClass] = useState<CalClass | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   void myId;
@@ -109,9 +146,16 @@ export function WeekCalendar({
 
   function openSlot(dayISO: string, y: number) {
     const mins = minutesFromTop(y);
+    const weekday = new Date(dayISO + "T00:00:00").getDay();
+    // When availability is configured, only let people book inside a trainer window.
+    if (avail.length > 0 && !isAvailable(weekday, GRID_START + mins, avail)) {
+      setNotice("That time is outside trainer availability. Shaded areas can't be booked.");
+      return;
+    }
     const h = START_HOUR + Math.floor(mins / 60);
     const m = mins % 60;
     setError(null);
+    setNotice(null);
     setPrefill({ date: dayISO, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` });
   }
 
@@ -154,13 +198,22 @@ export function WeekCalendar({
   return (
     <div className="card overflow-hidden">
       <div className="flex items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 dark:border-white/10">
-        <p className="text-xs muted">Click any open slot to book · <span className="text-violet-500">violet</span> = group class</p>
+        <p className="text-xs muted">
+          Click any open slot to book · <span className="text-violet-500">violet</span> = group class
+          {avail.length > 0 && <> · <span className="text-slate-400">shaded</span> = outside trainer hours</>}
+        </p>
         {people.length > 0 && (
           <button onClick={() => { setError(null); setPrefill({ date: defaultDay, time: "09:00" }); }} className="btn-primary px-3 py-1.5 text-xs">
             + New appointment
           </button>
         )}
       </div>
+      {notice && (
+        <div className="flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+          <span>{notice}</span>
+          <button onClick={() => setNotice(null)} className="shrink-0 font-medium hover:underline">Dismiss</button>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           {/* Day headers */}
@@ -208,6 +261,16 @@ export function WeekCalendar({
                 {HOURS.map((h) => (
                   <div key={h} style={{ height: PX_PER_HOUR }} className="border-b border-slate-100 hover:bg-brand-50/40 dark:border-white/5 dark:hover:bg-white/5" />
                 ))}
+
+                {/* Off-hours shading (outside trainer availability) */}
+                {avail.length > 0 &&
+                  offHoursBands(new Date(d + "T00:00:00").getDay(), avail).map((b, i) => (
+                    <div
+                      key={`off-${i}`}
+                      className="pointer-events-none absolute left-0 right-0 z-0 bg-slate-200/50 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(100,116,139,0.08)_6px,rgba(100,116,139,0.08)_12px)] dark:bg-black/25"
+                      style={{ top: b.top, height: b.height }}
+                    />
+                  ))}
 
                 {/* Now line */}
                 {nowTop != null && isSameDay(new Date(d + "T00:00:00"), new Date()) && (
