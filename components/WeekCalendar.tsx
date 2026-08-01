@@ -287,8 +287,8 @@ export function WeekCalendar({
             })}
           </div>
 
-          {/* Grid body */}
-          <div className="relative flex">
+          {/* Grid body — pt-2 keeps the first hour label from being clipped */}
+          <div className="relative flex pt-2">
             {/* Hour gutter */}
             <div className="w-14 shrink-0">
               {HOURS.map((h) => (
