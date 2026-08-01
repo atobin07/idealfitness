@@ -107,7 +107,7 @@ export function PostComposer({
   }
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10">
+    <div className="rounded-3xl bg-white p-5 shadow-[0_4px_14px_-2px_rgba(15,23,42,0.08),0_24px_56px_-16px_rgba(15,23,42,0.34)] dark:bg-ink-800 dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.8)] dark:ring-1 dark:ring-white/10">
       <div className="flex gap-3">
         <Avatar name={myName} src={myAvatar} size="md" />
         <div className="flex-1">

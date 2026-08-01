@@ -43,13 +43,13 @@ export default async function FeedPage() {
         {/* Right rail */}
         <aside className="hidden space-y-4 self-start lg:sticky lg:top-6 lg:block">
           <CheckInCard checkedInToday={checkedInToday} streak={stats.current_streak} />
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 p-5 text-white shadow-[0_10px_30px_-8px_rgba(10,137,187,0.5)]">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 p-5 text-white shadow-[0_16px_40px_-10px_rgba(10,137,187,0.6)]">
             <div className="pointer-events-none absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10 blur-xl" />
             <p className="text-[11px] font-semibold uppercase tracking-widest text-white/70">Your points</p>
             <p className="mt-1 text-3xl font-extrabold tracking-tight">{stats.total_points.toLocaleString()}</p>
             <p className="mt-0.5 text-xs font-medium text-white/80">Level {stats.level} · {stats.current_streak}🔥 streak</p>
           </div>
-          <div className="rounded-2xl bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10">
+          <div className="rounded-3xl bg-white p-5 shadow-[0_4px_14px_-2px_rgba(15,23,42,0.08),0_24px_56px_-16px_rgba(15,23,42,0.34)] dark:bg-ink-800 dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.8)] dark:ring-1 dark:ring-white/10">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-sm font-bold text-ink-900 dark:text-white">Top members</h2>
               <Link href="/community/leaderboard" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Full board →</Link>

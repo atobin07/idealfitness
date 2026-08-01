@@ -32,7 +32,7 @@ const KIND_STYLE: Record<string, { emoji: string; label: string; bar: string; ch
 
 // Borderless, floating card surface reused across the feed.
 const FLOAT_CARD =
-  "rounded-2xl bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04),0_14px_36px_-18px_rgba(15,23,42,0.22)] dark:bg-ink-800 dark:shadow-none dark:ring-1 dark:ring-white/10";
+  "rounded-3xl bg-white shadow-[0_4px_14px_-2px_rgba(15,23,42,0.08),0_24px_56px_-16px_rgba(15,23,42,0.34)] dark:bg-ink-800 dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.8)] dark:ring-1 dark:ring-white/10";
 
 export function PostFeed({
   posts,
@@ -74,9 +74,9 @@ export function PostFeed({
         const mine = p.author_id === me.id;
 
         return (
-          <div key={p.id} className={`group relative overflow-hidden transition-shadow duration-200 hover:shadow-[0_6px_16px_rgba(15,23,42,0.06),0_24px_52px_-20px_rgba(15,23,42,0.30)] ${FLOAT_CARD}`}>
-            {style && <span className={`absolute inset-y-0 left-0 w-1 ${style.bar}`} />}
-            <div className="p-4">
+          <div key={p.id} className={`group relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_10px_24px_-4px_rgba(15,23,42,0.12),0_36px_72px_-20px_rgba(15,23,42,0.42)] ${FLOAT_CARD}`}>
+            {style && <span className={`absolute inset-y-0 left-0 w-1.5 ${style.bar}`} />}
+            <div className="p-5">
               <div className="flex items-start gap-3">
                 <Avatar name={p.author?.full_name || "Member"} src={p.author?.avatar_url} size="md" />
                 <div className="min-w-0 flex-1">
