@@ -305,6 +305,27 @@ export type Database = {
           { foreignKeyName: "comment_likes_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      events: {
+        Row: { id: string; created_by: string; kind: Database["public"]["Enums"]["event_kind"]; title: string; description: string | null; location: string | null; image_url: string | null; starts_at: string; ends_at: string | null; created_at: string }
+        Insert: { id?: string; created_by: string; kind?: Database["public"]["Enums"]["event_kind"]; title: string; description?: string | null; location?: string | null; image_url?: string | null; starts_at: string; ends_at?: string | null; created_at?: string }
+        Update: { id?: string; created_by?: string; kind?: Database["public"]["Enums"]["event_kind"]; title?: string; description?: string | null; location?: string | null; image_url?: string | null; starts_at?: string; ends_at?: string | null; created_at?: string }
+        Relationships: [{ foreignKeyName: "events_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
+      event_rsvps: {
+        Row: { id: string; event_id: string; user_id: string; status: Database["public"]["Enums"]["rsvp_status"]; note: string | null; created_at: string; updated_at: string }
+        Insert: { id?: string; event_id: string; user_id: string; status: Database["public"]["Enums"]["rsvp_status"]; note?: string | null; created_at?: string; updated_at?: string }
+        Update: { id?: string; event_id?: string; user_id?: string; status?: Database["public"]["Enums"]["rsvp_status"]; note?: string | null; created_at?: string; updated_at?: string }
+        Relationships: [
+          { foreignKeyName: "event_rsvps_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "events"; referencedColumns: ["id"] },
+          { foreignKeyName: "event_rsvps_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      member_profiles: {
+        Row: { user_id: string; intro: string | null; hometown: string | null; occupation: string | null; favorite_color: string | null; favorite_food: string | null; favorite_music: string | null; favorite_decade: string | null; favorite_movie: string | null; hobbies: string | null; dream_vacation: string | null; pets: string | null; early_bird_or_night_owl: string | null; coffee_or_tea: string | null; fun_fact: string | null; favorite_workout_song: string | null; favorite_movement: string | null; favorite_training_day: string | null; updated_at: string }
+        Insert: { user_id: string; intro?: string | null; hometown?: string | null; occupation?: string | null; favorite_color?: string | null; favorite_food?: string | null; favorite_music?: string | null; favorite_decade?: string | null; favorite_movie?: string | null; hobbies?: string | null; dream_vacation?: string | null; pets?: string | null; early_bird_or_night_owl?: string | null; coffee_or_tea?: string | null; fun_fact?: string | null; favorite_workout_song?: string | null; favorite_movement?: string | null; favorite_training_day?: string | null; updated_at?: string }
+        Update: { user_id?: string; intro?: string | null; hometown?: string | null; occupation?: string | null; favorite_color?: string | null; favorite_food?: string | null; favorite_music?: string | null; favorite_decade?: string | null; favorite_movie?: string | null; hobbies?: string | null; dream_vacation?: string | null; pets?: string | null; early_bird_or_night_owl?: string | null; coffee_or_tea?: string | null; fun_fact?: string | null; favorite_workout_song?: string | null; favorite_movement?: string | null; favorite_training_day?: string | null; updated_at?: string }
+        Relationships: [{ foreignKeyName: "member_profiles_user_id_fkey"; columns: ["user_id"]; isOneToOne: true; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -324,11 +345,13 @@ export type Database = {
       class_booking_status: "booked" | "waitlisted" | "cancelled" | "attended"
       challenge_metric: "checkins" | "sessions" | "classes" | "workouts" | "points"
       duel_status: "pending" | "active" | "completed" | "declined" | "cancelled"
+      event_kind: "gym" | "social"
       goal_status: "active" | "achieved" | "archived"
       invoice_status: "due" | "paid" | "void"
       package_status: "active" | "expired" | "cancelled"
       post_kind: "post" | "shoutout" | "congrats" | "thank_you" | "milestone"
       relationship_status: "active" | "inactive"
+      rsvp_status: "going" | "maybe" | "cant"
       session_status: "scheduled" | "completed" | "cancelled" | "no_show"
       user_role: "trainer" | "client"
     }
@@ -390,3 +413,8 @@ export type PostTag = Tbl["post_tags"]["Row"];
 export type PostLike = Tbl["post_likes"]["Row"];
 export type PostComment = Tbl["post_comments"]["Row"];
 export type CommentLike = Tbl["comment_likes"]["Row"];
+export type EventKind = Database["public"]["Enums"]["event_kind"];
+export type RsvpStatus = Database["public"]["Enums"]["rsvp_status"];
+export type GymEvent = Tbl["events"]["Row"];
+export type EventRsvp = Tbl["event_rsvps"]["Row"];
+export type MemberProfile = Tbl["member_profiles"]["Row"];

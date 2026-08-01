@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import type { Database } from "@/lib/database.types";
+
+type MemberProfileInsert = Database["public"]["Tables"]["member_profiles"]["Insert"];
 
 export type ProfileState = { error?: string; ok?: boolean } | undefined;
 
@@ -36,6 +39,43 @@ export async function updateProfile(
   revalidatePath("/settings");
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+const MEMBER_FIELDS = [
+  "intro", "hometown", "occupation", "favorite_color", "favorite_food", "favorite_music",
+  "favorite_decade", "favorite_movie", "hobbies", "dream_vacation", "pets",
+  "early_bird_or_night_owl", "coffee_or_tea", "fun_fact",
+  "favorite_workout_song", "favorite_movement", "favorite_training_day",
+] as const;
+
+export async function updateMemberProfile(_prev: ProfileState, formData: FormData): Promise<ProfileState> {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+
+  const row: Record<string, string | null> = { user_id: profile.id, updated_at: new Date().toISOString() };
+  for (const f of MEMBER_FIELDS) {
+    const v = String(formData.get(f) || "").trim();
+    row[f] = v || null;
+  }
+
+  const { error } = await supabase.from("member_profiles").upsert(row as MemberProfileInsert, { onConflict: "user_id" });
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings");
+  revalidatePath(`/members/${profile.id}`);
+  revalidatePath("/members");
+  return { ok: true };
+}
+
+export async function updateAvatar(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const url = String(formData.get("avatar_url") || "").trim();
+  if (!url) return;
+  await supabase.from("profiles").update({ avatar_url: url, updated_at: new Date().toISOString() }).eq("id", profile.id);
+  revalidatePath("/settings");
+  revalidatePath("/", "layout");
+  revalidatePath(`/members/${profile.id}`);
 }
 
 export async function addAvailability(formData: FormData) {

@@ -18,15 +18,31 @@ function colorFor(seed: string) {
 
 export function Avatar({
   name,
+  src,
   seed,
   size = "md",
 }: {
   name: string;
+  src?: string | null;
   seed?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }) {
   const dims =
-    size === "lg" ? "h-12 w-12 text-base" : size === "sm" ? "h-8 w-8 text-xs" : "h-10 w-10 text-sm";
+    size === "xl"
+      ? "h-24 w-24 text-2xl"
+      : size === "lg"
+      ? "h-12 w-12 text-base"
+      : size === "sm"
+      ? "h-8 w-8 text-xs"
+      : "h-10 w-10 text-sm";
+
+  if (src) {
+    return (
+      /* eslint-disable-next-line @next/next/no-img-element */
+      <img src={src} alt={name} className={`${dims} shrink-0 rounded-full object-cover`} />
+    );
+  }
+
   return (
     <div
       className={`flex ${dims} shrink-0 items-center justify-center rounded-full font-semibold text-white ${colorFor(

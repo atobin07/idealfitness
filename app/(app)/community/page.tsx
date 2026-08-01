@@ -9,15 +9,16 @@ import { CheckInCard } from "@/components/community/CheckInCard";
 import { toggleLike, toggleCommentLike, deletePost, deleteComment } from "@/app/(app)/community/actions";
 import { relativeTime } from "@/lib/format";
 
+type Person = { id: string; full_name: string; avatar_url: string | null };
 type Tag = { tagged_user_id: string; tagged: { full_name: string } | null };
 type CommentRow = {
   id: string; author_id: string; body: string; created_at: string;
-  author: { id: string; full_name: string } | null;
+  author: Person | null;
   comment_likes: { user_id: string }[];
 };
 type PostRow = {
   id: string; author_id: string; kind: string; body: string | null; image_url: string | null; created_at: string;
-  author: { id: string; full_name: string } | null;
+  author: Person | null;
   post_tags: Tag[];
   post_likes: { user_id: string }[];
   post_comments: CommentRow[];
@@ -38,19 +39,19 @@ export default async function FeedPage() {
     supabase
       .from("posts")
       .select(
-        "*, author:author_id(id, full_name), post_tags(tagged_user_id, tagged:tagged_user_id(full_name)), post_likes(user_id), post_comments(id, author_id, body, created_at, author:author_id(id, full_name), comment_likes(user_id))"
+        "*, author:author_id(id, full_name, avatar_url), post_tags(tagged_user_id, tagged:tagged_user_id(full_name)), post_likes(user_id), post_comments(id, author_id, body, created_at, author:author_id(id, full_name, avatar_url), comment_likes(user_id))"
       )
       .order("created_at", { ascending: false })
       .limit(40),
     supabase.from("profiles").select("id, full_name").neq("id", profile.id).order("full_name"),
     supabase.from("member_stats").select("total_points, level, current_streak, last_checkin_date").eq("user_id", profile.id).maybeSingle(),
-    supabase.from("member_stats").select("user_id, total_points, profile:user_id(full_name)").order("total_points", { ascending: false }).limit(5),
+    supabase.from("member_stats").select("user_id, total_points, profile:user_id(full_name, avatar_url)").order("total_points", { ascending: false }).limit(5),
   ]);
 
   const posts = (postsRaw ?? []) as unknown as PostRow[];
   const people = (peopleRaw ?? []) as { id: string; full_name: string }[];
   const stats = myStats ?? { total_points: 0, level: 1, current_streak: 0, last_checkin_date: null };
-  const leaders = (board ?? []) as unknown as { user_id: string; total_points: number; profile: { full_name: string } | null }[];
+  const leaders = (board ?? []) as unknown as { user_id: string; total_points: number; profile: { full_name: string; avatar_url: string | null } | null }[];
   const checkedInToday = stats.last_checkin_date === new Date().toISOString().slice(0, 10);
 
   return (
@@ -62,7 +63,7 @@ export default async function FeedPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         {/* Feed column */}
         <div className="space-y-4">
-          <PostComposer people={people} myId={profile.id} myName={profile.full_name} />
+          <PostComposer people={people} myId={profile.id} myName={profile.full_name} myAvatar={profile.avatar_url} />
 
           {posts.length === 0 && <div className="card p-10 text-center muted">No posts yet. Be the first to share something!</div>}
 
@@ -79,7 +80,7 @@ export default async function FeedPage() {
                 <div className="p-4">
                   {/* Header */}
                   <div className="flex items-start gap-3">
-                    <Avatar name={p.author?.full_name || "Member"} size="md" />
+                    <Avatar name={p.author?.full_name || "Member"} src={p.author?.avatar_url} size="md" />
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2">
                         <span className="font-semibold text-ink-900 dark:text-white">{p.author?.full_name || "Member"}</span>
@@ -137,7 +138,7 @@ export default async function FeedPage() {
                     const cMine = c.author_id === profile.id;
                     return (
                       <div key={c.id} className="flex items-start gap-2">
-                        <Avatar name={c.author?.full_name || "Member"} size="sm" />
+                        <Avatar name={c.author?.full_name || "Member"} src={c.author?.avatar_url} size="sm" />
                         <div className="min-w-0 flex-1">
                           <div className="inline-block rounded-2xl bg-slate-100 px-3 py-2 dark:bg-white/10">
                             <p className="text-sm font-semibold text-ink-900 dark:text-white">{c.author?.full_name || "Member"}</p>
@@ -162,7 +163,7 @@ export default async function FeedPage() {
                       </div>
                     );
                   })}
-                  <CommentBox postId={p.id} myName={profile.full_name} />
+                  <CommentBox postId={p.id} myName={profile.full_name} myAvatar={profile.avatar_url} />
                 </div>
               </div>
             );
@@ -186,7 +187,7 @@ export default async function FeedPage() {
               {leaders.map((r, i) => (
                 <div key={r.user_id} className="flex items-center gap-2">
                   <span className="w-4 text-center text-xs font-bold text-brand-600 dark:text-brand-300">{i + 1}</span>
-                  <Avatar name={r.profile?.full_name || "Member"} size="sm" />
+                  <Avatar name={r.profile?.full_name || "Member"} src={r.profile?.avatar_url} size="sm" />
                   <span className="min-w-0 flex-1 truncate text-sm text-ink-900 dark:text-white">{r.profile?.full_name || "Member"}</span>
                   <span className="text-xs font-semibold muted">{r.total_points.toLocaleString()}</span>
                 </div>

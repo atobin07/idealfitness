@@ -24,7 +24,7 @@ const PLACEHOLDERS: Record<PostKind, string> = {
   milestone: "Share a milestone…",
 };
 
-export function PostComposer({ people, myId, myName }: { people: Person[]; myId: string; myName: string }) {
+export function PostComposer({ people, myId, myName, myAvatar }: { people: Person[]; myId: string; myName: string; myAvatar?: string | null }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [kind, setKind] = useState<PostKind>("post");
@@ -86,7 +86,7 @@ export function PostComposer({ people, myId, myName }: { people: Person[]; myId:
   return (
     <div className="card p-4">
       <div className="flex gap-3">
-        <Avatar name={myName} size="md" />
+        <Avatar name={myName} src={myAvatar} size="md" />
         <div className="flex-1">
           {/* Kind pills */}
           <div className="mb-2 flex flex-wrap gap-1.5">

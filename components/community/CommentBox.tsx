@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { addComment } from "@/app/(app)/community/actions";
 import { Avatar } from "@/components/Avatar";
 
-export function CommentBox({ postId, myName }: { postId: string; myName: string }) {
+export function CommentBox({ postId, myName, myAvatar }: { postId: string; myName: string; myAvatar?: string | null }) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,7 +25,7 @@ export function CommentBox({ postId, myName }: { postId: string; myName: string 
 
   return (
     <div className="flex items-center gap-2">
-      <Avatar name={myName} size="sm" />
+      <Avatar name={myName} src={myAvatar} size="sm" />
       <input
         value={body}
         onChange={(e) => setBody(e.target.value)}

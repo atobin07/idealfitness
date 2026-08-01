@@ -12,7 +12,7 @@ const BADGE_EMOJI: Record<string, string> = {
 };
 
 const ACTIVITY_EMOJI: Record<string, string> = {
-  checkin: "📍", session: "💪", workout: "🏋️", badge: "🏅", duel: "⚔️", challenge: "🏆",
+  checkin: "📍", session: "💪", workout: "🏋️", badge: "🏅", duel: "⚔️", challenge: "🏆", event: "📅",
 };
 
 function levelProgress(points: number) {
