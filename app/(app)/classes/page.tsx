@@ -3,10 +3,11 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { NewClassDialog } from "@/components/NewClassDialog";
+import { ClassRoster } from "@/components/ClassRoster";
 import { bookClass, cancelBooking, deleteClass, generateSchedule } from "@/app/(app)/classes/actions";
 import { dayLabel, timeRange } from "@/lib/format";
 
-type Booking = { client_id: string; status: string; client: { full_name: string } | null };
+type Booking = { client_id: string; status: string; client: { full_name: string; avatar_url: string | null } | null };
 type ClassRow = {
   id: string;
   title: string;
@@ -28,7 +29,7 @@ export default async function ClassesPage() {
 
   const { data } = await supabase
     .from("classes")
-    .select("*, trainer:trainer_id(full_name), class_bookings(client_id, status, client:client_id(full_name))")
+    .select("*, trainer:trainer_id(full_name), class_bookings(client_id, status, client:client_id(full_name, avatar_url))")
     .gte("ends_at", new Date().toISOString())
     .order("starts_at", { ascending: true });
 
@@ -85,7 +86,7 @@ export default async function ClassesPage() {
 
               <div className="mt-3">
                 <div className="mb-1 flex items-center justify-between text-xs muted">
-                  <span>{booked.length}/{c.capacity} booked{waitlist.length > 0 ? ` · ${waitlist.length} waitlisted` : ""}</span>
+                  <ClassRoster booked={booked.map((b) => b.client)} waitlisted={waitlist.map((b) => b.client)} />
                   <span>{spotsLeft > 0 ? `${spotsLeft} spot${spotsLeft === 1 ? "" : "s"} left` : "Full"}</span>
                 </div>
                 <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-white/10">

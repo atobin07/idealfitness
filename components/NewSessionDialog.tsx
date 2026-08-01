@@ -99,7 +99,7 @@ export function NewSessionDialog({
                   </div>
                   <div>
                     <label className="label" htmlFor="location">Location</label>
-                    <input id="location" name="location" className="input" placeholder="Main floor" />
+                    <input id="location" name="location" className="input" placeholder="Optional" />
                   </div>
                 </div>
 

@@ -385,7 +385,7 @@ export function WeekCalendar({
                 </div>
                 <div>
                   <label className="label">Location</label>
-                  <input name="location" className="input" placeholder="Main floor" />
+                  <input name="location" className="input" placeholder="Optional" />
                 </div>
                 {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-500/10">{error}</p>}
                 <div className="flex justify-end gap-2">
