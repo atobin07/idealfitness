@@ -82,10 +82,10 @@ function minutesFromTop(y: number) {
 
 function statusBlockColor(status: string) {
   switch (status) {
-    case "completed": return "border-slate-300 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-white/10 dark:text-slate-300";
-    case "cancelled": return "border-red-200 bg-red-50 text-red-600 line-through dark:border-red-500/20 dark:bg-red-500/10";
-    case "no_show": return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10";
-    default: return "border-brand-300 bg-brand-50 text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/15 dark:text-brand-200";
+    case "completed": return "bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 shadow-sm ring-1 ring-slate-200/80 dark:from-white/10 dark:to-white/[0.04] dark:text-slate-300 dark:ring-white/10";
+    case "cancelled": return "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 line-through shadow-sm ring-1 ring-rose-200/70 dark:from-rose-500/15 dark:to-rose-500/5 dark:text-rose-300 dark:ring-rose-500/20";
+    case "no_show": return "bg-gradient-to-br from-amber-50 to-amber-100 text-amber-700 shadow-sm ring-1 ring-amber-200/70 dark:from-amber-500/15 dark:to-amber-500/5 dark:text-amber-300 dark:ring-amber-500/20";
+    default: return "bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-md shadow-brand-600/30 ring-1 ring-white/20";
   }
 }
 
@@ -133,7 +133,6 @@ export function WeekCalendar({
   void myId;
 
   const counterpartLabel = role === "trainer" ? "Client" : "Trainer";
-  const singleDay = days.length === 1;
 
   const byDay = useMemo(() => {
     const m = new Map<string, CalSession[]>();
@@ -224,63 +223,68 @@ export function WeekCalendar({
   const defaultDay = days.includes(todayISO) ? todayISO : days[0];
 
   return (
-    <div className="card overflow-hidden">
+    <div className="relative overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06),0_20px_50px_-24px_rgba(10,137,187,0.28)] ring-1 ring-slate-900/5 dark:bg-ink-800 dark:ring-white/10">
       {/* Toolbar: coach filter + prominent booking CTA */}
-      <div className="flex flex-col gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 bg-gradient-to-r from-brand-50/70 via-white to-white px-4 py-3 dark:from-brand-500/10 dark:via-ink-800 dark:to-ink-800 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           {isClient && coaches.length > 0 && (
-            <label className="flex items-center gap-2 text-xs font-medium text-ink-900 dark:text-white">
-              <span className="muted">Coach</span>
-              <select
-                value={selectedCoach ?? ""}
-                onChange={(e) => pickCoach(e.target.value)}
-                className="input h-8 w-auto py-1 text-xs"
-              >
-                {coaches.map((c) => (
-                  <option key={c.id} value={c.id}>{c.full_name}</option>
-                ))}
-              </select>
+            <label className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Coach</span>
+              <div className="relative">
+                <select
+                  value={selectedCoach ?? ""}
+                  onChange={(e) => pickCoach(e.target.value)}
+                  className="cursor-pointer appearance-none rounded-full bg-white py-1.5 pl-3.5 pr-9 text-xs font-bold text-brand-700 shadow-sm ring-1 ring-brand-200/70 transition hover:ring-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:bg-white/5 dark:text-brand-200 dark:ring-white/10"
+                >
+                  {coaches.map((c) => (
+                    <option key={c.id} value={c.id}>{c.full_name}</option>
+                  ))}
+                </select>
+                <svg className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </div>
             </label>
           )}
         </div>
         {people.length > 0 && (
           <button
             onClick={() => { setError(null); setPrefill({ date: defaultDay, time: "09:00" }); }}
-            className="btn-primary flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs"
+            className="group relative inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-brand-600/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/40 active:translate-y-0"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+            <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
             Book personal training
           </button>
         )}
       </div>
 
       {/* Instruction banner */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-brand-100 bg-brand-50/60 px-3 py-2 text-xs dark:border-brand-500/20 dark:bg-brand-500/10">
-        <span className="font-medium text-brand-700 dark:text-brand-300">
-          👆 Tap any open (white) slot{coachName ? ` with ${coachName}` : ""} to book a session.
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-gradient-to-r from-white to-brand-50/40 px-4 py-2.5 text-xs dark:from-ink-800 dark:to-brand-500/[0.06]">
+        <span className="font-semibold text-brand-700 dark:text-brand-200">
+          👆 Tap any open slot{coachName ? ` with ${coachName}` : ""} to book
         </span>
-        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-slate-200 bg-[repeating-linear-gradient(45deg,transparent,transparent_3px,rgba(100,116,139,0.25)_3px,rgba(100,116,139,0.25)_6px)]" /> off-hours</span>
-        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-slate-300 dark:bg-white/20" />🔒 booked</span>
-        <span className="flex items-center gap-1 muted"><span className="inline-block h-3 w-3 rounded bg-violet-300" /> group class</span>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-slate-200 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(100,116,139,0.3)_2px,rgba(100,116,139,0.3)_4px)]" /> off-hours</span>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10">🔒 booked</span>
+        <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-2 py-0.5 font-medium text-slate-500 ring-1 ring-slate-200/70 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10"><span className="inline-block h-2.5 w-2.5 rounded-sm bg-gradient-to-br from-violet-500 to-fuchsia-500" /> group class</span>
       </div>
       {notice && (
-        <div className="flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+        <div className="flex items-center justify-between gap-2 bg-amber-50 px-4 py-2 text-xs text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
           <span>{notice}</span>
-          <button onClick={() => setNotice(null)} className="shrink-0 font-medium hover:underline">Dismiss</button>
+          <button onClick={() => setNotice(null)} className="shrink-0 font-semibold hover:underline">Dismiss</button>
         </div>
       )}
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           {/* Day headers */}
-          <div className="sticky top-0 z-10 flex border-b border-slate-200 bg-white dark:border-white/10 dark:bg-ink-800">
+          <div className="sticky top-0 z-30 flex bg-white/85 shadow-[0_1px_0_rgba(15,23,42,0.05)] backdrop-blur-md dark:bg-ink-800/85 dark:shadow-[0_1px_0_rgba(255,255,255,0.06)]">
             <div className="w-14 shrink-0" />
             {days.map((d) => {
               const date = new Date(d + "T00:00:00");
               const today = isSameDay(date, new Date());
+              const weekend = [0, 6].includes(date.getDay());
               return (
-                <div key={d} className={`flex-1 border-l border-slate-100 py-2 text-center dark:border-white/10 ${singleDay ? "" : ""}`}>
-                  <p className="text-[11px] font-medium uppercase muted">{format(date, "EEE")}</p>
-                  <p className={`mx-auto mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${today ? "bg-brand-600 text-white" : "text-ink-900 dark:text-white"}`}>
+                <div key={d} className="flex-1 py-2.5 text-center">
+                  <p className={`text-[11px] font-bold uppercase tracking-widest ${weekend ? "text-slate-300 dark:text-slate-500" : "text-slate-400"}`}>{format(date, "EEE")}</p>
+                  <p className={`mx-auto mt-1 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-transform ${today ? "scale-105 bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-lg shadow-brand-600/35" : "text-ink-900 dark:text-white"}`}>
                     {format(date, "d")}
                   </p>
                 </div>
@@ -294,7 +298,7 @@ export function WeekCalendar({
             <div className="w-14 shrink-0">
               {HOURS.map((h) => (
                 <div key={h} style={{ height: PX_PER_HOUR }} className="relative">
-                  <span className="absolute -top-2 right-1 text-[10px] muted">
+                  <span className="absolute -top-2 right-2 text-[10px] font-semibold tracking-wide text-slate-300 dark:text-slate-500">
                     {h === 12 ? "12 PM" : h > 12 ? `${h - 12} PM` : `${h} AM`}
                   </span>
                 </div>
@@ -302,10 +306,13 @@ export function WeekCalendar({
             </div>
 
             {/* Day columns */}
-            {days.map((d) => (
+            {days.map((d) => {
+              const colDate = new Date(d + "T00:00:00");
+              const colToday = isSameDay(colDate, new Date());
+              return (
               <div
                 key={d}
-                className="relative flex-1 border-l border-slate-100 dark:border-white/10"
+                className={`relative flex-1 transition-colors [&:not(:first-child)]:shadow-[inset_1px_0_0_rgba(15,23,42,0.04)] dark:[&:not(:first-child)]:shadow-[inset_1px_0_0_rgba(255,255,255,0.05)] ${colToday ? "bg-gradient-to-b from-brand-50/60 via-brand-50/10 to-transparent dark:from-brand-500/[0.07] dark:via-brand-500/[0.02]" : ""}`}
                 style={{ height: HOURS.length * PX_PER_HOUR }}
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
@@ -314,18 +321,23 @@ export function WeekCalendar({
               >
                 {/* Hour lines — open hours invite a booking on hover */}
                 {HOURS.map((h) => {
-                  const weekday = new Date(d + "T00:00:00").getDay();
+                  const weekday = colDate.getDay();
                   const openHour = avail.length === 0 || isAvailable(weekday, h * 60, avail) || isAvailable(weekday, h * 60 + 30, avail);
                   return (
                     <div
                       key={h}
                       style={{ height: PX_PER_HOUR }}
-                      className={`group/cell relative border-b border-slate-100 dark:border-white/5 ${openHour ? "cursor-pointer hover:bg-brand-100/70 dark:hover:bg-brand-500/10" : ""}`}
+                      className={`group/cell relative border-b border-slate-100/70 dark:border-white/[0.04] ${openHour ? "cursor-pointer" : ""}`}
                     >
                       {openHour && (
-                        <span className="pointer-events-none absolute inset-0 z-[5] hidden items-center justify-center text-[10px] font-semibold text-brand-600 group-hover/cell:flex dark:text-brand-300">
-                          ＋ Book
-                        </span>
+                        <>
+                          <span className="pointer-events-none absolute inset-x-1 inset-y-[3px] rounded-lg bg-gradient-to-br from-brand-50 to-brand-100/50 opacity-0 ring-1 ring-inset ring-brand-200/60 transition-opacity duration-150 group-hover/cell:opacity-100 dark:from-brand-500/15 dark:to-brand-500/5 dark:ring-brand-500/25" />
+                          <span className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center">
+                            <span className="scale-90 rounded-full bg-gradient-to-r from-brand-500 to-brand-600 px-2.5 py-1 text-[10px] font-bold text-white opacity-0 shadow-lg shadow-brand-600/30 transition-all duration-150 group-hover/cell:scale-100 group-hover/cell:opacity-100">
+                              ＋ Book
+                            </span>
+                          </span>
+                        </>
                       )}
                     </div>
                   );
@@ -333,19 +345,19 @@ export function WeekCalendar({
 
                 {/* Off-hours shading (outside trainer availability) */}
                 {avail.length > 0 &&
-                  offHoursBands(new Date(d + "T00:00:00").getDay(), avail).map((b, i) => (
+                  offHoursBands(colDate.getDay(), avail).map((b, i) => (
                     <div
                       key={`off-${i}`}
-                      className="pointer-events-none absolute left-0 right-0 z-0 bg-slate-200/50 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(100,116,139,0.08)_6px,rgba(100,116,139,0.08)_12px)] dark:bg-black/25"
+                      className="pointer-events-none absolute left-0 right-0 z-0 bg-slate-100/60 bg-[repeating-linear-gradient(45deg,transparent,transparent_7px,rgba(100,116,139,0.06)_7px,rgba(100,116,139,0.06)_14px)] dark:bg-black/20"
                       style={{ top: b.top, height: b.height }}
                     />
                   ))}
 
                 {/* Now line */}
-                {nowTop != null && isSameDay(new Date(d + "T00:00:00"), new Date()) && (
+                {nowTop != null && isSameDay(colDate, new Date()) && (
                   <div className="pointer-events-none absolute left-0 right-0 z-20" style={{ top: nowTop }}>
-                    <div className="h-px bg-red-500" />
-                    <div className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
+                    <div className="h-[2px] bg-gradient-to-r from-rose-500 to-red-500 shadow-[0_0_8px_rgba(244,63,94,0.55)]" />
+                    <div className="absolute -left-[3px] -top-[3px] h-2.5 w-2.5 animate-pulse rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.7)] ring-2 ring-white dark:ring-ink-800" />
                   </div>
                 )}
 
@@ -362,10 +374,10 @@ export function WeekCalendar({
                       key={`busy-${i}`}
                       onClick={(e) => { e.stopPropagation(); setNotice("That time is already booked. Pick an open slot."); }}
                       style={{ top: Math.max(0, top), height: Math.max(20, height) }}
-                      className="absolute left-1 right-1 z-10 flex items-center gap-1 overflow-hidden rounded-md border border-slate-300 bg-slate-200/80 bg-[repeating-linear-gradient(45deg,transparent,transparent_5px,rgba(100,116,139,0.14)_5px,rgba(100,116,139,0.14)_10px)] px-2 py-1 text-[11px] font-medium text-slate-500 dark:border-white/15 dark:bg-white/10 dark:text-slate-300"
+                      className="absolute left-1 right-1 z-10 flex items-center gap-1.5 overflow-hidden rounded-lg bg-white/50 bg-[repeating-linear-gradient(45deg,transparent,transparent_5px,rgba(100,116,139,0.1)_5px,rgba(100,116,139,0.1)_10px)] px-2 py-1 text-[11px] font-semibold text-slate-400 shadow-sm ring-1 ring-slate-200/80 backdrop-blur-[2px] dark:bg-white/[0.06] dark:text-slate-400 dark:ring-white/10"
                     >
                       <span>🔒</span>
-                      <span>{format(start, "h:mm")} Booked</span>
+                      <span className="truncate">{format(start, "h:mm")} Booked</span>
                     </div>
                   );
                 })}
@@ -383,10 +395,10 @@ export function WeekCalendar({
                       key={s.id}
                       onClick={(e) => { e.stopPropagation(); setSelected(s); }}
                       style={{ top: Math.max(0, top), height: Math.max(20, height) }}
-                      className={`absolute left-1 right-1 z-10 overflow-hidden rounded-md border px-2 py-1 text-left text-[11px] leading-tight shadow-sm ${statusBlockColor(s.status)}`}
+                      className={`group/ev absolute left-1 right-1 z-10 overflow-hidden rounded-lg px-2 py-1 text-left text-[11px] leading-tight transition-all duration-200 hover:z-20 hover:-translate-y-0.5 hover:shadow-xl ${statusBlockColor(s.status)}`}
                     >
-                      <span className="block font-semibold">{format(start, "h:mm")} {s.title}</span>
-                      <span className="block truncate opacity-80">{s.otherName}</span>
+                      <span className="block truncate font-bold">{format(start, "h:mm")} {s.title}</span>
+                      <span className="block truncate opacity-90">{s.otherName}</span>
                     </button>
                   );
                 })}
@@ -405,21 +417,22 @@ export function WeekCalendar({
                       key={c.id}
                       onClick={(e) => { e.stopPropagation(); setSelectedClass(c); }}
                       style={{ top: Math.max(0, top), height: Math.max(20, height) }}
-                      className={`absolute left-1 right-1 z-10 overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-[11px] leading-tight shadow-sm ${
+                      className={`group/cls absolute left-1 right-1 z-10 overflow-hidden rounded-lg px-2 py-1 text-left text-[11px] leading-tight text-white ring-1 ring-white/20 transition-all duration-200 hover:z-20 hover:-translate-y-0.5 hover:shadow-xl ${
                         c.myStatus === "booked"
-                          ? "border-violet-500 bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-200"
-                          : "border-violet-400 bg-violet-50 text-violet-700 dark:bg-violet-500/10 dark:text-violet-200"
+                          ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-600/30"
+                          : "bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/25"
                       }`}
                     >
-                      <span className="block font-semibold">{format(start, "h:mm")} {c.title}</span>
-                      <span className="block truncate opacity-80">
-                        {c.myStatus ? (c.myStatus === "booked" ? "✓ Booked" : "Waitlisted") : full ? "Class full" : `${c.capacity - c.booked} spots`}
+                      <span className="block truncate font-bold">{format(start, "h:mm")} {c.title}</span>
+                      <span className="mt-0.5 inline-flex items-center rounded-full bg-white/20 px-1.5 py-px text-[10px] font-semibold">
+                        {c.myStatus ? (c.myStatus === "booked" ? "✓ Booked" : "Waitlisted") : full ? "Class full" : `${c.capacity - c.booked} spots left`}
                       </span>
                     </button>
                   );
                 })}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
