@@ -5,7 +5,15 @@ import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { EmailLinkForm } from "@/components/EmailLinkForm";
 import { addClientByEmail, connectToTrainer } from "@/app/(app)/clients/actions";
-import type { Profile } from "@/lib/database.types";
+import { WEEKDAYS } from "@/lib/format";
+import type { Profile, MemberProfile, Availability } from "@/lib/database.types";
+
+function hhmm(t: string) {
+  const [h, m] = t.split(":").map(Number);
+  const ap = h >= 12 ? "PM" : "AM";
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return `${hh}:${String(m).padStart(2, "0")} ${ap}`;
+}
 
 export default async function ClientsPage() {
   const profile = await requireProfile();
@@ -58,47 +66,124 @@ export default async function ClientsPage() {
     );
   }
 
-  // Client view — show linked trainer(s).
+  // Client view — show linked trainer(s) with a full profile.
   const { data } = await supabase
     .from("trainer_clients")
-    .select("trainer:trainer_id(id, full_name, email, bio)")
+    .select("trainer:trainer_id(id, full_name, email, bio, goals, avatar_url, phone)")
     .eq("client_id", profile.id)
     .eq("status", "active");
 
-  const trainers = (data ?? [])
-    .map((r) => r.trainer as unknown as Profile)
-    .filter(Boolean);
+  const trainers = (data ?? []).map((r) => r.trainer as unknown as Profile).filter(Boolean);
+  const trainerIds = trainers.map((t) => t.id);
+
+  let profiles: MemberProfile[] = [];
+  let avails: Availability[] = [];
+  if (trainerIds.length > 0) {
+    const [{ data: mp }, { data: av }] = await Promise.all([
+      supabase.from("member_profiles").select("*").in("user_id", trainerIds),
+      supabase.from("availability").select("*").in("trainer_id", trainerIds).order("weekday").order("start_time"),
+    ]);
+    profiles = (mp ?? []) as MemberProfile[];
+    avails = (av ?? []) as Availability[];
+  }
 
   return (
     <>
-      <PageHeader title="My Trainer" subtitle="Your coaching connections." />
+      <PageHeader title="My Trainer" subtitle="Get to know the coach in your corner." />
 
       {trainers.length === 0 ? (
         <div className="card mb-6 p-5">
           <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Connect with your trainer</h2>
-          <p className="mb-3 text-sm text-slate-500">
-            Enter your trainer's email to send them a connection request.
-          </p>
+          <p className="mb-3 text-sm text-slate-500">Enter your trainer's email to send them a connection request.</p>
           <EmailLinkForm action={connectToTrainer} placeholder="trainer@example.com" buttonLabel="Send request" />
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {trainers.map((t) => (
-            <div key={t.id} className="card p-5">
-              <div className="flex items-center gap-3">
-                <Avatar name={t.full_name || "Trainer"} size="lg" />
-                <div className="min-w-0">
-                  <p className="truncate text-lg font-semibold text-ink-900 dark:text-white">{t.full_name}</p>
-                  <p className="truncate text-sm text-slate-500">{t.email}</p>
+        <div className="space-y-6">
+          {trainers.map((t) => {
+            const mp = profiles.find((p) => p.user_id === t.id);
+            const days = WEEKDAYS.map((label, wd) => ({ label, slots: avails.filter((a) => a.trainer_id === t.id && a.weekday === wd) })).filter((d) => d.slots.length > 0);
+            const facts = [
+              { label: "Favorite movement", value: mp?.favorite_movement, emoji: "💪" },
+              { label: "Walk-out song", value: mp?.favorite_workout_song, emoji: "🎧" },
+              { label: "Favorite training day", value: mp?.favorite_training_day, emoji: "📆" },
+              { label: "Hometown", value: mp?.hometown, emoji: "📍" },
+              { label: "Fun fact", value: mp?.fun_fact, emoji: "✨" },
+            ].filter((f) => f.value);
+
+            return (
+              <div key={t.id} className="card overflow-hidden">
+                {/* Hero */}
+                <div className="card-brand flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+                  <Avatar name={t.full_name || "Coach"} src={t.avatar_url} size="xl" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-2xl font-bold text-white">{t.full_name}</h2>
+                      <span className="badge bg-white/20 text-white ring-1 ring-white/25">Coach</span>
+                    </div>
+                    {t.bio && <p className="mt-1 text-sm text-white/90">{t.bio}</p>}
+                    <p className="mt-1 text-xs text-white/70">{t.email}{t.phone ? ` · ${t.phone}` : ""}</p>
+                  </div>
+                  <div className="flex w-full gap-2 sm:w-auto sm:flex-col">
+                    <Link href={`/messages?with=${t.id}`} className="btn-on-brand flex-1 text-center">Message</Link>
+                    <Link href="/calendar" className="flex-1 rounded-lg bg-white/15 px-4 py-2 text-center text-sm font-semibold text-white ring-1 ring-white/25 hover:bg-white/25">Book a session</Link>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 p-6 md:grid-cols-2">
+                  <div className="space-y-5">
+                    {mp?.intro && (
+                      <div>
+                        <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide muted">About</h3>
+                        <p className="text-sm text-ink-900 dark:text-white">{mp.intro}</p>
+                      </div>
+                    )}
+                    {t.goals && (
+                      <div>
+                        <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide muted">Coaching philosophy</h3>
+                        <p className="text-sm text-ink-900 dark:text-white">{t.goals}</p>
+                      </div>
+                    )}
+                    {facts.length > 0 && (
+                      <div>
+                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide muted">Good to know</h3>
+                        <dl className="space-y-1.5">
+                          {facts.map((f) => (
+                            <div key={f.label} className="flex items-center justify-between gap-3 text-sm">
+                              <dt className="muted">{f.emoji} {f.label}</dt>
+                              <dd className="text-right font-medium text-ink-900 dark:text-white">{f.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide muted">Weekly availability</h3>
+                    {days.length === 0 ? (
+                      <p className="text-sm muted">Availability coming soon — reach out to book.</p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {days.map((d) => (
+                          <div key={d.label} className="flex items-start gap-2 text-sm">
+                            <span className="w-24 shrink-0 font-medium text-ink-900 dark:text-white">{d.label}</span>
+                            <span className="flex flex-wrap gap-1">
+                              {d.slots.map((s) => (
+                                <span key={s.id} className="badge bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                                  {hhmm(s.start_time)}–{hhmm(s.end_time)}
+                                </span>
+                              ))}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Link href={`/members/${t.id}`} className="mt-4 inline-block text-sm font-medium text-brand-600 hover:text-brand-700">View full profile →</Link>
+                  </div>
                 </div>
               </div>
-              {t.bio && <p className="mt-3 text-sm text-slate-600">{t.bio}</p>}
-              <div className="mt-4 flex gap-2">
-                <Link href="/messages" className="btn-secondary flex-1">Message</Link>
-                <Link href="/calendar" className="btn-primary flex-1">Book session</Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </>
