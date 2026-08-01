@@ -76,7 +76,7 @@ export function MessageComposer({ recipientId, myId, members }: { recipientId: s
   }
 
   return (
-    <div className="border-t border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-ink-800">
+    <div className="bg-white p-3 shadow-[0_-1px_0_rgba(15,23,42,0.05)] dark:bg-ink-800 dark:shadow-[0_-1px_0_rgba(255,255,255,0.06)]">
       {pending && (
         <div className="mb-2 flex items-center gap-2 rounded-lg bg-slate-100 p-2 dark:bg-white/10">
           {pending.preview || pending.kind === "gif" ? (

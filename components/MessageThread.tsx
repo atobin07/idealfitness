@@ -53,7 +53,15 @@ export function MessageThread({ initial, myId, otherId }: { initial: ChatMessage
 
   return (
     <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
-      {thread.length === 0 && <p className="m-auto text-sm text-slate-400">No messages yet. Say hello 👋</p>}
+      {thread.length === 0 && (
+        <div className="m-auto flex max-w-xs flex-col items-center gap-3 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-3xl dark:bg-brand-500/15">👋</div>
+          <div>
+            <p className="font-semibold text-ink-900 dark:text-white">No messages yet</p>
+            <p className="text-sm text-slate-500">Say hello and start the conversation.</p>
+          </div>
+        </div>
+      )}
       {thread.map((m) => {
         const mine = m.sender_id === myId;
         const reactions = m.message_reactions ?? [];
