@@ -25,6 +25,12 @@ export function MemberProfileForm({ mp }: { mp: MemberProfile | null }) {
       </div>
 
       <div>
+        <label className="label" htmlFor="current_goal">🎯 Current goal — what are you working on right now?</label>
+        <input id="current_goal" name="current_goal" defaultValue={mp?.current_goal ?? ""} className="input" placeholder="First unbroken pull-up · Deadlift 2x bodyweight · Show up 4x a week" />
+        <p className="mt-1 text-xs muted">Shown front-and-center on your profile so the crew can cheer you on.</p>
+      </div>
+
+      <div>
         <p className="mb-2 text-sm font-semibold text-ink-900 dark:text-white">Get to know me</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field name="hometown" label="Hometown" value={mp?.hometown} placeholder="Virginia Beach, VA" />

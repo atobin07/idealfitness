@@ -73,6 +73,16 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         </div>
       </div>
 
+      {mp?.current_goal && (
+        <div className="mt-6 flex items-start gap-3 rounded-xl border border-brand-200 bg-brand-50 p-5 dark:border-brand-500/30 dark:bg-brand-500/10">
+          <span className="text-2xl">🎯</span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">Currently working on</p>
+            <p className="text-lg font-semibold text-ink-900 dark:text-white">{mp.current_goal}</p>
+          </div>
+        </div>
+      )}
+
       {mp?.intro && (
         <div className="mt-6 card p-6">
           <h2 className="mb-2 font-semibold text-ink-900 dark:text-white">About</h2>
@@ -125,7 +135,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {facts.length === 0 && gym.length === 0 && !mp?.intro && (
+      {facts.length === 0 && gym.length === 0 && !mp?.intro && !mp?.current_goal && (
         <div className="mt-6 card p-10 text-center muted">
           {isMe ? (
             <>You haven&apos;t filled out your profile yet. <Link href="/settings" className="font-medium text-brand-600">Add your details →</Link></>

@@ -6,7 +6,7 @@ import { Avatar } from "@/components/Avatar";
 
 type MemberCard = {
   id: string; full_name: string; role: string; avatar_url: string | null;
-  about: { intro: string | null; favorite_movement: string | null } | null;
+  about: { intro: string | null; current_goal: string | null; favorite_movement: string | null } | null;
 };
 
 export default async function MembersPage() {
@@ -15,7 +15,7 @@ export default async function MembersPage() {
 
   const { data } = await supabase
     .from("profiles")
-    .select("id, full_name, role, avatar_url, about:member_profiles(intro, favorite_movement)")
+    .select("id, full_name, role, avatar_url, about:member_profiles(intro, current_goal, favorite_movement)")
     .order("full_name", { ascending: true });
 
   const members = (data ?? []) as unknown as MemberCard[];
@@ -37,12 +37,15 @@ export default async function MembersPage() {
               </div>
             </div>
             {m.about?.intro ? (
-              <p className="mt-3 line-clamp-3 text-sm muted">{m.about.intro}</p>
+              <p className="mt-3 line-clamp-2 text-sm muted">{m.about.intro}</p>
             ) : (
               <p className="mt-3 text-sm italic muted">No profile yet.</p>
             )}
+            {m.about?.current_goal && (
+              <p className="mt-2 line-clamp-1 text-xs font-medium text-brand-700 dark:text-brand-300">🎯 {m.about.current_goal}</p>
+            )}
             {m.about?.favorite_movement && (
-              <p className="mt-2 text-xs muted">💪 Loves {m.about.favorite_movement}</p>
+              <p className="mt-1 text-xs muted">💪 Loves {m.about.favorite_movement}</p>
             )}
           </Link>
         ))}

@@ -42,7 +42,7 @@ export async function updateProfile(
 }
 
 const MEMBER_FIELDS = [
-  "intro", "hometown", "occupation", "favorite_color", "favorite_food", "favorite_music",
+  "intro", "current_goal", "hometown", "occupation", "favorite_color", "favorite_food", "favorite_music",
   "favorite_decade", "favorite_movie", "hobbies", "dream_vacation", "pets",
   "early_bird_or_night_owl", "coffee_or_tea", "fun_fact",
   "favorite_workout_song", "favorite_movement", "favorite_training_day",
