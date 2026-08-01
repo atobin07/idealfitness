@@ -564,10 +564,10 @@ export function WeekCalendar({
                 {pending
                   ? "Working…"
                   : selectedClass.myStatus
-                  ? `Cancel ${selectedClass.myStatus === "waitlisted" ? "waitlist spot" : "booking"}`
+                  ? `Leave ${selectedClass.myStatus === "waitlisted" ? "the waitlist" : "the group"}`
                   : selectedClass.booked >= selectedClass.capacity
-                  ? "Add me to the waitlist"
-                  : "I'll be there crushing it! 💪"}
+                  ? "Join the waitlist"
+                  : "Join the group 🙌"}
               </button>
             ) : (
               <p className="mt-4 text-xs muted">You run this class — manage the roster on the Classes page.</p>

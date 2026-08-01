@@ -69,8 +69,8 @@ export default async function ClassesPage() {
           const pct = Math.min(100, Math.round((booked.length / Math.max(1, c.capacity)) * 100));
           const encouragement =
             myStatus === "waitlisted" ? "You're on the waitlist"
-            : myStatus ? "✓ You're coming"
-            : full ? "Class full · join the waitlist"
+            : myStatus ? "✓ You're in the group"
+            : full ? "Group full · join the waitlist"
             : `${spotsLeft} ${spotsLeft === 1 ? "spot" : "spots"} left`;
 
           return (
