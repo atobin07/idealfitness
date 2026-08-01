@@ -13,11 +13,11 @@ type SessionWithPeople = Session & {
   client: Pick<Profile, "id" | "full_name"> | null;
 };
 
-function Stat({ label, value, href, tone }: { label: string; value: string | number; href: string; tone?: string }) {
+function Stat({ label, value, href }: { label: string; value: string | number; href: string; tone?: string }) {
   return (
-    <Link href={href} className="card p-5 transition hover:shadow-md hover:ring-1 hover:ring-brand-200 dark:hover:ring-brand-500/30">
-      <p className="text-sm muted">{label}</p>
-      <p className={`stat-value mt-1 ${tone ?? ""}`}>{value}</p>
+    <Link href={href} className="card-brand p-5 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-600/30">
+      <p className="text-sm text-white/75">{label}</p>
+      <p className="stat-value mt-1">{value}</p>
     </Link>
   );
 }

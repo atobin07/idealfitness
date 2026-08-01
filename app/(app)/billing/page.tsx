@@ -103,10 +103,10 @@ export default async function BillingPage() {
       <PageHeader title="Billing" subtitle="Packages, client credits, and invoices." />
 
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="card p-5"><p className="text-sm muted">Revenue (paid)</p><p className="stat-value">{formatMoney(revenue)}</p></div>
-        <div className="card p-5"><p className="text-sm muted">Outstanding</p><p className="stat-value">{formatMoney(outstanding)}</p></div>
-        <div className="card p-5"><p className="text-sm muted">Active packages</p><p className="stat-value">{credits.length}</p></div>
-        <div className="card p-5"><p className="text-sm muted">Offerings</p><p className="stat-value">{packages.length}</p></div>
+        <div className="card-brand p-5"><p className="text-sm text-white/75">Revenue (paid)</p><p className="stat-value">{formatMoney(revenue)}</p></div>
+        <div className="card-brand p-5"><p className="text-sm text-white/75">Outstanding</p><p className="stat-value">{formatMoney(outstanding)}</p></div>
+        <div className="card-brand p-5"><p className="text-sm text-white/75">Active packages</p><p className="stat-value">{credits.length}</p></div>
+        <div className="card-brand p-5"><p className="text-sm text-white/75">Offerings</p><p className="stat-value">{packages.length}</p></div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

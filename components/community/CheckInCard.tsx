@@ -26,17 +26,17 @@ export function CheckInCard({ checkedInToday, streak }: { checkedInToday: boolea
   }
 
   return (
-    <div className="card flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="card-brand flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="font-semibold text-ink-900 dark:text-white">
+        <p className="font-semibold text-white">
           {done ? "You're checked in today ✅" : "Are you at the gym?"}
         </p>
-        <p className="text-sm muted">
+        <p className="text-sm text-white/75">
           {curStreak > 0 ? `${curStreak}-day streak — keep it alive.` : "Check in to start a streak and earn points."}
         </p>
-        {flash && <p className="mt-1 text-sm font-medium text-brand-600 dark:text-brand-300">{flash}</p>}
+        {flash && <p className="mt-1 text-sm font-medium text-white">{flash}</p>}
       </div>
-      <button onClick={go} disabled={pending || done} className={`shrink-0 ${done ? "btn-secondary" : "btn-primary"}`}>
+      <button onClick={go} disabled={pending || done} className="btn-on-brand shrink-0 disabled:opacity-80">
         {pending ? "Checking in…" : done ? "Checked in" : "Check in now"}
       </button>
     </div>

@@ -5,11 +5,11 @@ import { PageHeader } from "@/components/PageHeader";
 import { formatMoney } from "@/lib/money";
 import type { GymSettings } from "@/lib/database.types";
 
-function Stat({ label, value, tone }: { label: string; value: string | number; tone?: string }) {
+function Stat({ label, value }: { label: string; value: string | number; tone?: string }) {
   return (
-    <div className="card p-5">
-      <p className="text-sm muted">{label}</p>
-      <p className={`stat-value mt-1 ${tone ?? ""}`}>{value}</p>
+    <div className="card-brand p-5">
+      <p className="text-sm text-white/75">{label}</p>
+      <p className="stat-value mt-1">{value}</p>
     </div>
   );
 }

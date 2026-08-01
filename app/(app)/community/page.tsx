@@ -172,10 +172,10 @@ export default async function FeedPage() {
         {/* Right rail */}
         <aside className="hidden space-y-4 lg:block">
           <CheckInCard checkedInToday={checkedInToday} streak={stats.current_streak} />
-          <div className="card p-4">
-            <p className="text-xs uppercase tracking-wide muted">Your points</p>
-            <p className="text-2xl font-bold text-ink-900 dark:text-white">{stats.total_points.toLocaleString()}</p>
-            <p className="text-xs muted">Level {stats.level} · {stats.current_streak}🔥 streak</p>
+          <div className="card-brand p-4">
+            <p className="text-xs uppercase tracking-wide text-white/70">Your points</p>
+            <p className="text-2xl font-bold text-white">{stats.total_points.toLocaleString()}</p>
+            <p className="text-xs text-white/70">Level {stats.level} · {stats.current_streak}🔥 streak</p>
           </div>
           <div className="card p-4">
             <div className="mb-2 flex items-center justify-between">

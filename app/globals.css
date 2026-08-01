@@ -31,6 +31,20 @@ body {
   .card {
     @apply rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-ink-800;
   }
+  /* Branded feature card — logo blue with white text. */
+  .card-brand {
+    @apply rounded-xl border border-white/10 bg-gradient-to-br from-brand-400 to-brand-600 text-white shadow-md shadow-brand-600/25;
+  }
+  .card-brand .muted {
+    @apply text-white/70;
+  }
+  .card-brand .stat-value {
+    @apply text-white;
+  }
+  /* Action button that sits on a branded (blue) surface. */
+  .btn-on-brand {
+    @apply btn bg-white text-brand-700 shadow-sm hover:bg-brand-50 disabled:hover:bg-white;
+  }
   .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }

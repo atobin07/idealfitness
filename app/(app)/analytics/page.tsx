@@ -7,11 +7,11 @@ import { BarChart } from "@/components/BarChart";
 import { formatMoney } from "@/lib/money";
 import { statusLabel } from "@/lib/format";
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
+function Stat({ label, value }: { label: string; value: string; tone?: string }) {
   return (
-    <div className="card p-5">
-      <p className="text-sm muted">{label}</p>
-      <p className={`stat-value ${tone ?? ""}`}>{value}</p>
+    <div className="card-brand p-5">
+      <p className="text-sm text-white/75">{label}</p>
+      <p className="stat-value">{value}</p>
     </div>
   );
 }

@@ -72,10 +72,10 @@ export default async function CommunityPage() {
         {/* Stat tiles */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {tiles.map((t) => (
-            <div key={t.label} className="card p-4">
-              <p className="text-xs uppercase tracking-wide muted">{t.label}</p>
-              <p className="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{t.value}</p>
-              <p className="text-xs muted">{t.hint}</p>
+            <div key={t.label} className="card-brand p-4">
+              <p className="text-xs uppercase tracking-wide text-white/70">{t.label}</p>
+              <p className="mt-1 text-2xl font-bold text-white">{t.value}</p>
+              <p className="text-xs text-white/70">{t.hint}</p>
             </div>
           ))}
         </div>
