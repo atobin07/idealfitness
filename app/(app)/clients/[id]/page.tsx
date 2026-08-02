@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { Avatar } from "@/components/Avatar";
 import { AddProgressForm } from "@/components/AddProgressForm";
+import { ClientNotes } from "@/components/ClientNotes";
 import { removeClient } from "@/app/(app)/clients/actions";
 import { dayLabel, timeRange, statusBadge, statusLabel } from "@/lib/format";
 import type { ClientProgress, Profile, Session } from "@/lib/database.types";
@@ -30,7 +31,7 @@ export default async function ClientDetailPage({
     .maybeSingle();
   if (!link) notFound();
 
-  const [{ data: client }, { data: sessions }, { data: progress }] = await Promise.all([
+  const [{ data: client }, { data: sessions }, { data: progress }, { data: noteRow }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", id).single(),
     supabase
       .from("sessions")
@@ -45,6 +46,12 @@ export default async function ClientDetailPage({
       .eq("client_id", id)
       .order("recorded_at", { ascending: false })
       .limit(20),
+    supabase
+      .from("client_notes")
+      .select("notes, tags")
+      .eq("trainer_id", profile.id)
+      .eq("client_id", id)
+      .maybeSingle(),
   ]);
 
   if (!client) notFound();
@@ -86,6 +93,14 @@ export default async function ClientDetailPage({
             <p className="text-sm font-medium text-ink-900 dark:text-white">{c.goals || "—"}</p>
           </div>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <ClientNotes
+          clientId={c.id}
+          initialNotes={(noteRow as { notes: string | null } | null)?.notes ?? ""}
+          initialTags={(noteRow as { tags: string[] } | null)?.tags ?? []}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

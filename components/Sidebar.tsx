@@ -32,6 +32,8 @@ const ICONS: Record<string, string> = {
   pets: "M8.5 10.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 8a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm4.5 2.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 13c-2 0-3.5 1.6-3.5 3.2 0 1 .8 1.8 1.8 1.8h3.4c1 0 1.8-.8 1.8-1.8C15.5 14.6 14 13 12 13z",
   support: "M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z",
   checkin: "M9 12l2 2 4-4m1-5a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2m2-1h4a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4a1 1 0 011-1z",
+  today: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+  followups: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
 };
 
 export function Sidebar({
@@ -57,6 +59,7 @@ export function Sidebar({
       title: "Overview",
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+        ...(isTrainer ? [{ href: "/today", label: "Today", icon: "today" }] : []),
         { href: "/calendar", label: "Calendar", icon: "calendar" },
         { href: "/classes", label: "Classes", icon: "classes" },
         { href: "/community", label: "Community", icon: "community" },
@@ -80,6 +83,7 @@ export function Sidebar({
         { href: "/clients", label: isTrainer ? "Clients" : "My Trainer", icon: "clients" },
         { href: "/members", label: "Members", icon: "members" },
         { href: "/messages", label: "Messages", icon: "messages", badge: unread },
+        ...(isTrainer ? [{ href: "/broadcast", label: "Broadcast", icon: "announcements" }] : []),
         { href: "/announcements", label: "Announcements", icon: "announcements" },
         { href: "/feedback", label: "Feedback", icon: "feedback" },
         { href: "/support", label: "Support", icon: "support" },
@@ -88,6 +92,7 @@ export function Sidebar({
     {
       title: "Business",
       items: [
+        ...(isTrainer ? [{ href: "/follow-ups", label: "Follow-ups", icon: "followups" }] : []),
         { href: "/billing", label: "Billing", icon: "billing" },
         ...(isTrainer ? [{ href: "/analytics", label: "Analytics", icon: "analytics" }] : []),
       ],

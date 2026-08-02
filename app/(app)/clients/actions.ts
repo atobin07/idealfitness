@@ -109,6 +109,42 @@ export async function addProgress(
 }
 
 /** Trainer removes a client link. */
+/** Trainer saves private notes & flags for one of their clients. */
+export async function saveClientNotes(_prev: LinkState, formData: FormData): Promise<LinkState> {
+  const profile = await requireProfile();
+  if (profile.role !== "trainer" && !profile.is_admin) return { error: "Not allowed." };
+  const supabase = await createClient();
+
+  const clientId = String(formData.get("client_id") || "");
+  const notes = String(formData.get("notes") || "").trim() || null;
+  const tags = String(formData.get("tags") || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .slice(0, 12);
+  if (!clientId) return { error: "Missing client." };
+
+  // Confirm the client belongs to this trainer.
+  const { data: link } = await supabase
+    .from("trainer_clients")
+    .select("id")
+    .eq("trainer_id", profile.id)
+    .eq("client_id", clientId)
+    .maybeSingle();
+  if (!link) return { error: "Not your client." };
+
+  const { error } = await supabase
+    .from("client_notes")
+    .upsert(
+      { trainer_id: profile.id, client_id: clientId, notes, tags, updated_at: new Date().toISOString() },
+      { onConflict: "trainer_id,client_id" }
+    );
+  if (error) return { error: error.message };
+
+  revalidatePath(`/clients/${clientId}`);
+  return { ok: "Saved" };
+}
+
 export async function removeClient(formData: FormData) {
   const profile = await requireProfile();
   const supabase = await createClient();

@@ -56,6 +56,12 @@ export type Database = {
           { foreignKeyName: "client_packages_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      client_notes: {
+        Row: { trainer_id: string; client_id: string; notes: string | null; tags: string[]; updated_at: string }
+        Insert: { trainer_id: string; client_id: string; notes?: string | null; tags?: string[]; updated_at?: string }
+        Update: { trainer_id?: string; client_id?: string; notes?: string | null; tags?: string[]; updated_at?: string }
+        Relationships: []
+      }
       client_progress: {
         Row: { arms_cm: number | null; body_fat_pct: number | null; chest_cm: number | null; client_id: string; created_at: string; hips_cm: number | null; id: string; metrics: Json; notes: string | null; recorded_at: string; recorded_by: string; thighs_cm: number | null; waist_cm: number | null; weight_kg: number | null }
         Insert: { arms_cm?: number | null; body_fat_pct?: number | null; chest_cm?: number | null; client_id: string; created_at?: string; hips_cm?: number | null; id?: string; metrics?: Json; notes?: string | null; recorded_at?: string; recorded_by: string; thighs_cm?: number | null; waist_cm?: number | null; weight_kg?: number | null }

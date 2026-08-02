@@ -75,4 +75,5 @@ export async function setSessionStatus(formData: FormData) {
   await supabase.from("sessions").update({ status }).eq("id", id);
   revalidatePath("/calendar");
   revalidatePath("/dashboard");
+  revalidatePath("/today");
 }
