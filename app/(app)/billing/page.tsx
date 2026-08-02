@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { formatMoney } from "@/lib/money";
 import {
   createInvoice,
@@ -101,6 +102,15 @@ export default async function BillingPage() {
   return (
     <>
       <PageHeader title="Billing" subtitle="Packages, client credits, and invoices." />
+      <PageGuide
+        id="billing"
+        summary="Sell packages, track session credits, and get paid."
+        points={[
+          "See each client's remaining session credits at a glance.",
+          "Issue invoices and mark them paid when money comes in.",
+          "Overdue and outstanding amounts also surface on the Follow-ups page.",
+        ]}
+      />
 
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="card-brand p-5"><p className="text-sm text-white/75">Revenue (paid)</p><p className="stat-value">{formatMoney(revenue)}</p></div>

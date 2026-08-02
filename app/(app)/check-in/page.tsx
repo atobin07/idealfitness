@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { AttendanceBoard } from "@/components/AttendanceBoard";
 
 export default async function CheckInPage() {
@@ -25,6 +26,15 @@ export default async function CheckInPage() {
   return (
     <>
       <PageHeader title="Check-in" subtitle="Record who showed up, plus no-shows and cancellations. A check-in credits the member's account automatically." />
+      <PageGuide
+        id="check-in"
+        summary="The front-desk tool for recording class attendance — including members who don't use the app."
+        points={[
+          "Mark each person attended, no-show, or cancelled.",
+          "You can check people in on their behalf from your account.",
+          "A check-in automatically credits the member and feeds their streak and points.",
+        ]}
+      />
       <AttendanceBoard
         today={today}
         members={(members ?? []).map((m) => ({ id: m.id, full_name: m.full_name, avatar_url: m.avatar_url }))}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 import { formatMoney } from "@/lib/money";
 
@@ -107,6 +108,15 @@ export default async function FollowUpsPage() {
   return (
     <>
       <PageHeader title="Follow-ups" subtitle="Who needs your attention today — retention and sales at a glance." />
+      <PageGuide
+        id="follow-ups"
+        summary="Your daily worklist for keeping members and catching revenue before it slips away."
+        points={[
+          "Message members who haven't been in for 14+ days before you lose them.",
+          "Spot clients low on session credits and offer a renewal — easy upsell.",
+          "See who owes money and chase overdue invoices.",
+        ]}
+      />
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Lapsed members */}

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { NewExerciseForm } from "@/components/NewExerciseForm";
 import { deleteExercise } from "@/app/(app)/exercises/actions";
 import type { Exercise } from "@/lib/database.types";
@@ -20,6 +21,15 @@ export default async function ExercisesPage() {
   return (
     <>
       <PageHeader title="Exercise library" subtitle="Reusable exercises for your workout programs." />
+      <PageGuide
+        id="exercises"
+        summary="Your master list of exercises — build it once, reuse it everywhere."
+        points={[
+          "Add each exercise with cues, muscle groups and equipment.",
+          "Pull from this library when building workout programs.",
+          "Keeps every coach consistent across the gym.",
+        ]}
+      />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.3fr]">
         <div className="card h-fit p-6">

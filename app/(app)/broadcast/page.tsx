@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { BroadcastForm } from "@/components/BroadcastForm";
 
 export default async function BroadcastPage() {
@@ -32,6 +33,15 @@ export default async function BroadcastPage() {
   return (
     <>
       <PageHeader title="Broadcast" subtitle="Message everyone at once — cancellations, promos, reminders." />
+      <PageGuide
+        id="broadcast"
+        summary="Send one message to a whole group instead of typing the same thing to each person."
+        points={[
+          "Choose all your active clients, or just one class's roster.",
+          "Great for schedule changes, closures, promos and event reminders.",
+          "Everyone receives it as a private DM and replies only to you.",
+        ]}
+      />
       <div className="max-w-2xl">
         <BroadcastForm clientCount={clientCount ?? 0} classes={classes} />
       </div>

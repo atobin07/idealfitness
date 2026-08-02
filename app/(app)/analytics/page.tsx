@@ -3,6 +3,7 @@ import { format, subMonths, startOfMonth } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { BarChart } from "@/components/BarChart";
 import { formatMoney } from "@/lib/money";
 import { statusLabel } from "@/lib/format";
@@ -68,6 +69,15 @@ export default async function AnalyticsPage() {
   return (
     <>
       <PageHeader title="Analytics" subtitle="Your gym at a glance." />
+      <PageGuide
+        id="analytics"
+        summary="The business numbers that tell you how the gym is really doing."
+        points={[
+          "Track revenue, active clients and attendance trends over time.",
+          "Spot growth or drop-off early so you can act.",
+          "Handy for monthly reviews and goal-setting.",
+        ]}
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Revenue (paid)" value={formatMoney(revenue)} tone="text-brand-600 dark:text-brand-400" />

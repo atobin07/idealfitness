@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { NewClassDialog } from "@/components/NewClassDialog";
 import { ClassRoster } from "@/components/ClassRoster";
 import { ClassJoinButton } from "@/components/ClassJoinButton";
@@ -53,6 +54,17 @@ export default async function ClassesPage() {
           ) : undefined
         }
       />
+      {canManage && (
+        <PageGuide
+          id="classes"
+          summary="Create group classes and keep them full."
+          points={[
+            "Add a class, or auto-generate a rolling 2-week schedule in one click.",
+            "See who's booked and manage each class's roster.",
+            "Anyone in the gym can book an open class to boost attendance.",
+          ]}
+        />
+      )}
 
       {classes.length === 0 && (
         <div className="card p-10 text-center muted">No upcoming classes.</div>

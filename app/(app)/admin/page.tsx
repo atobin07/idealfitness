@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { formatMoney } from "@/lib/money";
 import type { GymSettings } from "@/lib/database.types";
 
@@ -68,6 +69,15 @@ export default async function AdminOverviewPage() {
       <PageHeader
         title="Admin console"
         subtitle={`${settings?.name ?? "Your gym"} — gym-wide management and controls.`}
+      />
+      <PageGuide
+        id="admin"
+        summary="The owner's control center — the big-picture view across the whole gym."
+        points={[
+          "Jump to roster, roles and gym-wide settings.",
+          "Oversee everything across all coaches and members.",
+          "Owner/admin only — members never see this.",
+        ]}
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

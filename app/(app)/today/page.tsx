@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 import { setSessionStatus } from "@/app/(app)/calendar/actions";
 import { timeRange, statusBadge, statusLabel } from "@/lib/format";
@@ -47,6 +48,15 @@ export default async function TodayPage() {
         title={`Today · ${format(now, "EEEE, MMM d")}`}
         subtitle="Run your day from one screen — check people off as they come and go."
         action={<Link href="/calendar" className="btn-secondary">Full calendar →</Link>}
+      />
+      <PageGuide
+        id="today"
+        summary="Your run sheet for today — everything happening, in order, on one screen."
+        points={[
+          "Tap ✓ Done or No-show on each session as members arrive or miss.",
+          "See every group class with its live roster and how full it is.",
+          "Tapped the wrong button? Undo puts the session back to scheduled.",
+        ]}
       />
 
       {/* Quick tallies */}

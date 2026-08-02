@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 import {
   assignClientToTrainer,
@@ -30,6 +31,15 @@ export default async function AdminPeoplePage() {
   return (
     <>
       <PageHeader title="People & roster" subtitle={`${clients.length} members · ${trainers.length} coaches`} />
+      <PageGuide
+        id="admin-people"
+        summary="The master roster — manage every account and who can do what."
+        points={[
+          "Promote members to coaches or admins, or change roles.",
+          "Link or unlink trainers and their clients.",
+          "See every account in the gym in one table.",
+        ]}
+      />
 
       {/* Coaches */}
       <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide muted">Coaches & staff</h2>

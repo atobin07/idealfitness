@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 
 type MemberCard = {
@@ -23,6 +24,15 @@ export default async function MembersPage() {
   return (
     <>
       <PageHeader title="Members" subtitle="Meet the crew. Tap anyone to see their profile." />
+      <PageGuide
+        id="members"
+        summary="The full gym directory — everyone who belongs here, coaches and members alike."
+        points={[
+          "Browse every member and coach in one place.",
+          "Tap anyone to view their public profile.",
+          "Find and connect with people across the gym.",
+        ]}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {members.map((m) => (

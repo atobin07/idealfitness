@@ -2,6 +2,7 @@ import { formatDistanceToNow } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 import { NewAnnouncementForm } from "@/components/NewAnnouncementForm";
 import { deleteAnnouncement } from "@/app/(app)/announcements/actions";
@@ -27,6 +28,15 @@ export default async function AnnouncementsPage() {
   return (
     <>
       <PageHeader title="Announcements" subtitle="Gym-wide news and updates." />
+      <PageGuide
+        id="announcements"
+        summary="Gym-wide news that every member sees — a public notice board."
+        points={[
+          "Posts appear on everyone's dashboard.",
+          "Use it for hours changes, closures, events and big news.",
+          "Need to reach specific people privately? Use Broadcast instead.",
+        ]}
+      />
 
       {isTrainer && (
         <div className="card mb-6 p-5">

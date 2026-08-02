@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { Avatar } from "@/components/Avatar";
 import { EmailLinkForm } from "@/components/EmailLinkForm";
 import { addClientByEmail, connectToTrainer } from "@/app/(app)/clients/actions";
@@ -34,6 +35,15 @@ export default async function ClientsPage() {
     return (
       <>
         <PageHeader title="Clients" subtitle={`${clients.length} on your roster.`} />
+        <PageGuide
+          id="clients"
+          summary="Everyone you personally coach — your book of business."
+          points={[
+            "Tap a client to open their profile, session history and progress.",
+            "Add private notes & flags (VIP, injury, at-risk) only you can see.",
+            "Message them or log new measurements from their profile.",
+          ]}
+        />
 
         <div className="card mb-6 p-5">
           <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Add a client</h2>

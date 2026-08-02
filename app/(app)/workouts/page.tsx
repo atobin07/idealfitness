@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
+import { PageGuide } from "@/components/PageGuide";
 import { NewPlanDialog } from "@/components/NewPlanDialog";
 import { statusLabel } from "@/lib/format";
 
@@ -21,6 +22,15 @@ export default async function WorkoutsPage() {
     return (
       <>
         <PageHeader title="Workout programs" subtitle="Build programs and assign them to clients." action={<NewPlanDialog />} />
+        <PageGuide
+          id="workouts"
+          summary="Create structured training programs and hand them to your clients."
+          points={[
+            "Build a program from your exercise library.",
+            "Assign it to one or more clients — it appears in their app.",
+            "Clients follow it and log their workouts as they go.",
+          ]}
+        />
         {plans.length === 0 ? (
           <div className="card p-10 text-center muted">No programs yet. Create your first one.</div>
         ) : (
