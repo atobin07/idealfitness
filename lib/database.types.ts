@@ -56,6 +56,18 @@ export type Database = {
           { foreignKeyName: "client_packages_trainer_id_fkey"; columns: ["trainer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
         ]
       }
+      contests: {
+        Row: { id: string; title: string; description: string | null; prize: string | null; starts_at: string | null; ends_at: string | null; status: string; created_by: string | null; created_at: string }
+        Insert: { id?: string; title: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string }
+        Update: { id?: string; title?: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string }
+        Relationships: []
+      }
+      contest_entries: {
+        Row: { contest_id: string; user_id: string; joined_at: string }
+        Insert: { contest_id: string; user_id: string; joined_at?: string }
+        Update: { contest_id?: string; user_id?: string; joined_at?: string }
+        Relationships: []
+      }
       client_notes: {
         Row: { trainer_id: string; client_id: string; notes: string | null; tags: string[]; updated_at: string }
         Insert: { trainer_id: string; client_id: string; notes?: string | null; tags?: string[]; updated_at?: string }

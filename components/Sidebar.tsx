@@ -33,6 +33,7 @@ const ICONS: Record<string, string> = {
   support: "M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z",
   checkin: "M9 12l2 2 4-4m1-5a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2m2-1h4a1 1 0 011 1v1a1 1 0 01-1 1H9a1 1 0 01-1-1V4a1 1 0 011-1z",
   today: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
+  contests: "M8 21h8m-4-4v4m7-17H5v3a4 4 0 004 4h6a4 4 0 004-4V4zM5 4H3v1a3 3 0 003 3m13-4h2v1a3 3 0 01-3 3",
   followups: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
 };
 
@@ -63,6 +64,7 @@ export function Sidebar({
         { href: "/calendar", label: "Calendar", icon: "calendar" },
         { href: "/classes", label: "Classes", icon: "classes" },
         { href: "/community", label: "Community", icon: "community" },
+        { href: "/contests", label: "Contests", icon: "contests" },
         { href: "/events", label: "Events", icon: "events" },
         { href: "/topic", label: "Hot Topic", icon: "topic" },
         { href: "/animal-kingdom", label: "Animal Kingdom", icon: "pets" },

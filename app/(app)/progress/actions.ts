@@ -100,3 +100,13 @@ export async function deleteGoal(formData: FormData) {
   await supabase.from("goals").delete().eq("id", id);
   revalidatePath("/progress");
 }
+
+export async function deleteMeasurement(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  // RLS also restricts this to rows the caller recorded.
+  await supabase.from("client_progress").delete().eq("id", id).eq("recorded_by", profile.id);
+  revalidatePath("/progress");
+}

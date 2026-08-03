@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { LineChart } from "@/components/LineChart";
 import { MeasurementForm } from "@/components/MeasurementForm";
 import { GoalForm } from "@/components/GoalForm";
-import { deleteGoal, setGoalStatus, updateGoalProgress } from "@/app/(app)/progress/actions";
+import { deleteGoal, setGoalStatus, updateGoalProgress, deleteMeasurement } from "@/app/(app)/progress/actions";
 import type { ClientProgress, Goal } from "@/lib/database.types";
 
 function goalPct(g: Goal): number | null {
@@ -133,6 +133,57 @@ export default async function ProgressPage() {
         <div className="card p-5">
           <h2 className="mb-3 font-semibold text-ink-900 dark:text-white">Log a measurement</h2>
           <MeasurementForm today={today} />
+        </div>
+      </div>
+
+      {/* Entry history — every measurement you've logged, newest first */}
+      <div className="mt-8">
+        <h2 className="mb-3 text-lg font-semibold text-ink-900 dark:text-white">Measurement history</h2>
+        <div className="overflow-hidden rounded-2xl bg-white shadow-[0_2px_10px_-2px_rgba(15,23,42,0.08)] dark:bg-ink-800 dark:ring-1 dark:ring-white/10">
+          {measurements.length === 0 ? (
+            <p className="p-6 text-center text-sm text-slate-400">No entries yet — log your first measurement above.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-400 dark:border-white/10">
+                    <th className="px-4 py-2.5 font-semibold">Date</th>
+                    <th className="px-3 py-2.5 font-semibold">Weight</th>
+                    <th className="px-3 py-2.5 font-semibold">Body fat</th>
+                    <th className="px-3 py-2.5 font-semibold">Chest</th>
+                    <th className="px-3 py-2.5 font-semibold">Waist</th>
+                    <th className="px-3 py-2.5 font-semibold">Hips</th>
+                    <th className="px-3 py-2.5 font-semibold">Arms</th>
+                    <th className="px-3 py-2.5 font-semibold">Thighs</th>
+                    <th className="px-3 py-2.5" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...measurements].reverse().map((m) => {
+                    const cell = (v: number | null, unit: string) => (v == null ? <span className="text-slate-300 dark:text-slate-600">—</span> : `${v}${unit}`);
+                    return (
+                      <tr key={m.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/60 dark:border-white/5 dark:hover:bg-white/5">
+                        <td className="whitespace-nowrap px-4 py-2.5 font-semibold text-ink-900 dark:text-white">{format(new Date(m.recorded_at + (m.recorded_at.length === 10 ? "T00:00:00" : "")), "MMM d, yyyy")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.weight_kg, " kg")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.body_fat_pct, "%")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.chest_cm, " cm")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.waist_cm, " cm")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.hips_cm, " cm")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.arms_cm, " cm")}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-slate-300">{cell(m.thighs_cm, " cm")}</td>
+                        <td className="px-3 py-2.5 text-right">
+                          <form action={deleteMeasurement}>
+                            <input type="hidden" name="id" value={m.id} />
+                            <button className="text-xs font-medium text-slate-300 hover:text-red-500" title="Delete entry">Delete</button>
+                          </form>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
