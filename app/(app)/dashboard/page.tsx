@@ -1,18 +1,10 @@
 import { requireProfile } from "@/lib/auth";
-import { PageHeader } from "@/components/PageHeader";
-import { DashboardTabs } from "@/components/hub/DashboardTabs";
+import { DashboardShell, type ShellTab } from "@/components/hub/DashboardShell";
 import { HomeSection } from "@/components/hub/HomeSection";
 import { OverviewSection } from "@/components/hub/OverviewSection";
 import { ClassesSection } from "@/components/hub/ClassesSection";
 import { EventsSection } from "@/components/hub/EventsSection";
 import { TopicSection } from "@/components/hub/TopicSection";
-
-const TITLES: Record<string, string> = {
-  hub: "My Hub",
-  classes: "Classes",
-  events: "Events",
-  topic: "Hot Topic",
-};
 
 export default async function DashboardPage({
   searchParams,
@@ -23,22 +15,22 @@ export default async function DashboardPage({
   const profile = await requireProfile();
   const firstName = (profile.full_name || "there").split(" ")[0];
 
-  const active = tab && TITLES[tab] ? tab : "home";
+  // Every panel is rendered up front so switching tabs is instant and never
+  // navigates — the shell just shows/hides.
+  const tabs: ShellTab[] = [
+    { key: "home", label: "Home", content: <HomeSection profile={profile} /> },
+    { key: "hub", label: "My Hub", content: <OverviewSection profile={profile} /> },
+    { key: "classes", label: "Classes", content: <ClassesSection profile={profile} /> },
+    { key: "events", label: "Events", content: <EventsSection profile={profile} /> },
+    { key: "topic", label: "Hot Topic", content: <TopicSection profile={profile} /> },
+  ];
 
   return (
-    <>
-      <PageHeader
-        title={active === "home" ? `Welcome back, ${firstName}` : TITLES[active]}
-        subtitle={active === "home" ? "Check in, then catch up on the gym feed." : undefined}
-      />
-
-      <DashboardTabs />
-
-      {active === "home" && <HomeSection profile={profile} />}
-      {active === "hub" && <OverviewSection profile={profile} />}
-      {active === "classes" && <ClassesSection profile={profile} />}
-      {active === "events" && <EventsSection profile={profile} />}
-      {active === "topic" && <TopicSection profile={profile} />}
-    </>
+    <DashboardShell
+      tabs={tabs}
+      initial={tab ?? "home"}
+      title={`Welcome back, ${firstName}`}
+      subtitle="Check in, catch up on the feed, and jump to anything else with the tabs."
+    />
   );
 }
