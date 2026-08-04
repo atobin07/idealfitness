@@ -31,7 +31,7 @@ export default async function AppLayout({
   const pages: SearchItem[] = [
     { label: "Dashboard", href: "/dashboard", group: "Page" },
     { label: "Calendar", href: "/calendar", group: "Page" },
-    { label: "Feed", href: "/feed", group: "Page" },
+    { label: "Community", href: "/feed", group: "Page" },
     { label: "Leaderboard", href: "/feed?tab=leaderboard", group: "Page" },
     { label: "Challenges", href: "/feed?tab=challenges", group: "Page" },
     { label: "Duels", href: "/feed?tab=duels", group: "Page" },

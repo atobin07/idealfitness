@@ -61,7 +61,7 @@ export function Sidebar({
       items: [
         { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
         ...(isTrainer ? [{ href: "/today", label: "Today", icon: "today" }] : []),
-        { href: "/feed", label: "Feed", icon: "community" },
+        { href: "/feed", label: "Community", icon: "community" },
         { href: "/calendar", label: "Calendar", icon: "calendar" },
         { href: "/contests", label: "Contests", icon: "contests" },
         { href: "/animal-kingdom", label: "Animal Kingdom", icon: "pets" },
