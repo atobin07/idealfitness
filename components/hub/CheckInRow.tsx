@@ -42,7 +42,7 @@ export async function CheckInRow({ profile }: { profile: Profile }) {
         ) : (
           <p className="mt-1 text-sm text-white/80">No classes on the schedule yet.</p>
         )}
-        <a href="#classes" className="mt-3 inline-block rounded-lg bg-white/20 px-3 py-1.5 text-sm font-medium hover:bg-white/30">
+        <a href="/dashboard?tab=classes" className="mt-3 inline-block rounded-lg bg-white/20 px-3 py-1.5 text-sm font-medium hover:bg-white/30">
           {isTrainer ? "Manage classes" : "See the schedule"}
         </a>
       </div>
