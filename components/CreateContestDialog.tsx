@@ -39,6 +39,27 @@ export function CreateContestDialog() {
                 <label className="label" htmlFor="ct-prize">🏆 Prize / reward</label>
                 <input id="ct-prize" name="prize" className="input" placeholder="1 free month + a gym hoodie" />
               </div>
+              <div>
+                <label className="label" htmlFor="ct-rules">📋 Rules</label>
+                <textarea id="ct-rules" name="rules" rows={3} className="input" placeholder="One judged attempt per member. Rule keepers record scores. Ties broken by earliest submission…" />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="label" htmlFor="ct-metric">What&apos;s scored</label>
+                  <input id="ct-metric" name="metric" className="input" placeholder="Total reps" />
+                </div>
+                <div>
+                  <label className="label" htmlFor="ct-unit">Unit</label>
+                  <input id="ct-unit" name="unit" className="input" placeholder="reps" />
+                </div>
+                <div>
+                  <label className="label" htmlFor="ct-scoring">Winner</label>
+                  <select id="ct-scoring" name="scoring" className="input" defaultValue="high">
+                    <option value="high">Highest wins</option>
+                    <option value="low">Lowest wins</option>
+                  </select>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label" htmlFor="ct-start">Starts</label>

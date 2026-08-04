@@ -57,15 +57,33 @@ export type Database = {
         ]
       }
       contests: {
-        Row: { id: string; title: string; description: string | null; prize: string | null; starts_at: string | null; ends_at: string | null; status: string; created_by: string | null; created_at: string }
-        Insert: { id?: string; title: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string }
-        Update: { id?: string; title?: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string }
+        Row: { id: string; title: string; description: string | null; prize: string | null; starts_at: string | null; ends_at: string | null; status: string; created_by: string | null; created_at: string; metric: string | null; unit: string | null; scoring: string; rules: string | null }
+        Insert: { id?: string; title: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string; metric?: string | null; unit?: string | null; scoring?: string; rules?: string | null }
+        Update: { id?: string; title?: string; description?: string | null; prize?: string | null; starts_at?: string | null; ends_at?: string | null; status?: string; created_by?: string | null; created_at?: string; metric?: string | null; unit?: string | null; scoring?: string; rules?: string | null }
         Relationships: []
       }
       contest_entries: {
         Row: { contest_id: string; user_id: string; joined_at: string }
         Insert: { contest_id: string; user_id: string; joined_at?: string }
         Update: { contest_id?: string; user_id?: string; joined_at?: string }
+        Relationships: []
+      }
+      contest_rule_keepers: {
+        Row: { contest_id: string; user_id: string; added_at: string }
+        Insert: { contest_id: string; user_id: string; added_at?: string }
+        Update: { contest_id?: string; user_id?: string; added_at?: string }
+        Relationships: []
+      }
+      contest_scores: {
+        Row: { id: string; contest_id: string; participant_id: string; value: number; note: string | null; recorded_by: string | null; recorded_at: string; created_at: string }
+        Insert: { id?: string; contest_id: string; participant_id: string; value: number; note?: string | null; recorded_by?: string | null; recorded_at?: string; created_at?: string }
+        Update: { id?: string; contest_id?: string; participant_id?: string; value?: number; note?: string | null; recorded_by?: string | null; recorded_at?: string; created_at?: string }
+        Relationships: []
+      }
+      contest_cheers: {
+        Row: { id: string; contest_id: string; from_user: string; to_user: string; kind: string; created_at: string }
+        Insert: { id?: string; contest_id: string; from_user: string; to_user: string; kind: string; created_at?: string }
+        Update: { id?: string; contest_id?: string; from_user?: string; to_user?: string; kind?: string; created_at?: string }
         Relationships: []
       }
       benchmark_records: {
@@ -465,6 +483,9 @@ export type Message = Tbl["messages"]["Row"];
 export type Announcement = Tbl["announcements"]["Row"];
 export type ClientProgress = Tbl["client_progress"]["Row"];
 export type BenchmarkRecord = Tbl["benchmark_records"]["Row"];
+export type Contest = Tbl["contests"]["Row"];
+export type ContestScore = Tbl["contest_scores"]["Row"];
+export type ContestCheer = Tbl["contest_cheers"]["Row"];
 export type Exercise = Tbl["exercises"]["Row"];
 export type WorkoutPlan = Tbl["workout_plans"]["Row"];
 export type WorkoutPlanItem = Tbl["workout_plan_items"]["Row"];

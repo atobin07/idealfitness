@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -75,7 +76,7 @@ export default async function ContestsPage() {
                     <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">
                       🏆 {ended ? "Contest ended" : "Contest"}
                     </span>
-                    <h3 className="mt-2 text-lg font-bold leading-tight">{c.title}</h3>
+                    <Link href={`/contests/${c.id}`} className="mt-2 block text-lg font-bold leading-tight hover:underline">{c.title}</Link>
                     {(c.starts_at || c.ends_at) && (
                       <p className="mt-0.5 text-xs text-white/80">
                         {c.starts_at ? format(new Date(c.starts_at + "T00:00:00"), "MMM d") : "Now"}
@@ -130,6 +131,10 @@ export default async function ContestsPage() {
                     )
                   )}
                   {ended && <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-500 dark:bg-white/10">This contest has ended</span>}
+
+                  <Link href={`/contests/${c.id}`} className="btn-ghost px-2 py-1.5 text-sm font-semibold text-brand-700 dark:text-brand-300">
+                    Open →
+                  </Link>
 
                   {isAdmin && (
                     <div className="ml-auto flex items-center gap-1">

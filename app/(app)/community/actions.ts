@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import type { ChallengeMetric, PostKind } from "@/lib/database.types";
-import { CHALLENGE_PREFIX } from "@/lib/channels";
+import { CHALLENGE_PREFIX, CONTEST_PREFIX } from "@/lib/channels";
 
 const POST_KINDS: PostKind[] = ["post", "shoutout", "congrats", "thank_you", "milestone", "announcement"];
 function asKind(v: unknown): PostKind {
@@ -28,6 +28,7 @@ function asChannel(v: unknown): string {
   const s = String(v || "feed");
   if (s === "pets") return "pets";
   if (s.startsWith(CHALLENGE_PREFIX) && UUID_RE.test(s.slice(CHALLENGE_PREFIX.length))) return s;
+  if (s.startsWith(CONTEST_PREFIX) && UUID_RE.test(s.slice(CONTEST_PREFIX.length))) return s;
   return "feed";
 }
 
@@ -44,6 +45,7 @@ export async function checkIn(): Promise<{ already: boolean; streak: number; poi
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
   revalidatePath("/dashboard");
   return data as { already: boolean; streak: number; points: number };
 }
@@ -60,6 +62,7 @@ export async function giveKudos(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 // ---- Challenges --------------------------------------------------------
@@ -105,6 +108,7 @@ export async function joinChallenge(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function leaveChallenge(formData: FormData) {
@@ -120,6 +124,7 @@ export async function leaveChallenge(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 // ---- Duels -------------------------------------------------------------
@@ -229,6 +234,7 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
   return { ok: true };
 }
 
@@ -243,6 +249,7 @@ export async function deletePost(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function toggleLike(formData: FormData) {
@@ -263,6 +270,7 @@ export async function toggleLike(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function addComment(formData: FormData) {
@@ -277,6 +285,7 @@ export async function addComment(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function deleteComment(formData: FormData) {
@@ -290,6 +299,7 @@ export async function deleteComment(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function toggleCommentLike(formData: FormData) {
@@ -310,6 +320,7 @@ export async function toggleCommentLike(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/community/challenges/[id]", "page");
+  revalidatePath("/contests/[id]", "page");
 }
 
 export async function joinPartnerGoal(formData: FormData) {
