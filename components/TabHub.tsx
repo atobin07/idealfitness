@@ -3,33 +3,35 @@
 import { createContext, useContext, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 
-export type ShellTab = { key: string; label: string; content: React.ReactNode };
+export type HubTab = { key: string; label: string; content: React.ReactNode };
 
 const TabContext = createContext<(key: string) => void>(() => {});
 
 /** Lets in-panel controls switch tabs without navigating. */
-export function useDashboardTab() {
+export function useHubTab() {
   return useContext(TabContext);
 }
 
 /**
- * Client-side tab shell. Every panel is rendered once on the server and passed
- * in as `content`; switching tabs just shows/hides — no navigation, no reload.
- *
- * The tab bar is locked in place (sticky) and each panel keeps a minimum
- * height, so swapping tabs never collapses the page or moves your scroll —
- * the interface below the tabs simply changes.
+ * A page with a locked tab bar. An optional persistent `top` section stays put
+ * above the tabs; every panel is rendered once and switching just shows/hides —
+ * no navigation, no reload. The tab bar is sticky and panels keep a minimum
+ * height, so the interface below the tabs is the only thing that changes.
  */
-export function DashboardShell({
+export function TabHub({
   tabs,
   initial,
   title,
   subtitle,
+  top,
+  basePath,
 }: {
-  tabs: ShellTab[];
+  tabs: HubTab[];
   initial: string;
   title: string;
   subtitle?: string;
+  top?: React.ReactNode;
+  basePath: string;
 }) {
   const [active, setActive] = useState(tabs.some((t) => t.key === initial) ? initial : tabs[0].key);
 
@@ -39,7 +41,7 @@ export function DashboardShell({
     // Keep the address bar in sync for refresh/share/deep-links, without a
     // Next.js navigation (no re-render, no scroll reset).
     if (typeof window !== "undefined") {
-      const url = key === tabs[0].key ? "/dashboard" : `/dashboard?tab=${key}`;
+      const url = key === tabs[0].key ? basePath : `${basePath}?tab=${key}`;
       window.history.replaceState(null, "", url);
     }
   }
@@ -47,6 +49,8 @@ export function DashboardShell({
   return (
     <TabContext.Provider value={select}>
       <PageHeader title={title} subtitle={subtitle} />
+
+      {top && <div className="mb-6">{top}</div>}
 
       {/* Locked tab bar — stays pinned below the top bar while you browse and
           while you switch tabs. Bleeds to the content edges so panels scroll

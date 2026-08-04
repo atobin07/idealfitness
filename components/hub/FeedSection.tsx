@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
-import { CommunityTabs } from "@/components/community/CommunityTabs";
 import { PostFeed, POST_SELECT, type PostRow } from "@/components/community/PostFeed";
+import { TabLink } from "@/components/hub/TabLink";
 import type { Profile } from "@/lib/database.types";
 
 export async function FeedSection({ profile }: { profile: Profile }) {
@@ -20,8 +19,6 @@ export async function FeedSection({ profile }: { profile: Profile }) {
 
   return (
     <>
-      <CommunityTabs />
-
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         {/* Feed column */}
         <PostFeed
@@ -38,7 +35,7 @@ export async function FeedSection({ profile }: { profile: Profile }) {
           <div className="rounded-3xl bg-white p-5 shadow-[0_4px_14px_-2px_rgba(15,23,42,0.08),0_24px_56px_-16px_rgba(15,23,42,0.34)] dark:bg-ink-800 dark:shadow-[0_18px_50px_-20px_rgba(0,0,0,0.8)] dark:ring-1 dark:ring-white/10">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-sm font-bold text-ink-900 dark:text-white">Top members</h2>
-              <Link href="/community/leaderboard" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Full board →</Link>
+              <TabLink tab="leaderboard" className="text-xs font-semibold text-brand-600 hover:text-brand-700">Full board →</TabLink>
             </div>
             <div className="space-y-1">
               {leaders.map((r, i) => {

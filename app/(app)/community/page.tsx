@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-// The community feed now lives on the main dashboard page. Its sub-pages
-// (leaderboard, challenges, duels, partner goals) remain their own routes.
+// The community feed now lives on the dedicated /feed page.
 export default function CommunityPage() {
-  redirect("/dashboard");
+  redirect("/feed");
 }
