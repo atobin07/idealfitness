@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -50,7 +51,7 @@ export default async function ChallengesPage() {
             <div key={c.id} className="card flex flex-col p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="font-semibold text-ink-900 dark:text-white">{c.title}</h3>
+                  <Link href={`/community/challenges/${c.id}`} className="font-semibold text-ink-900 hover:text-brand-700 dark:text-white dark:hover:text-brand-300">{c.title}</Link>
                   <p className="text-xs muted">
                     {metricLabel(c.metric)} · ends {format(new Date(c.ends_at), "MMM d")} · {c.challenge_participants.length} in · {c.reward_points} pts
                   </p>
@@ -91,6 +92,13 @@ export default async function ChallengesPage() {
                   ))}
                 </div>
               </div>
+
+              <Link
+                href={`/community/challenges/${c.id}`}
+                className="mt-3 flex items-center justify-center gap-1 rounded-xl bg-slate-100 py-2 text-sm font-semibold text-brand-700 transition hover:bg-slate-200 dark:bg-white/5 dark:text-brand-300 dark:hover:bg-white/10"
+              >
+                Open challenge wall 💬
+              </Link>
             </div>
           );
         })}

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 import type { ChallengeMetric, PostKind } from "@/lib/database.types";
+import { CHALLENGE_PREFIX } from "@/lib/channels";
 
 const POST_KINDS: PostKind[] = ["post", "shoutout", "congrats", "thank_you", "milestone", "announcement"];
 function asKind(v: unknown): PostKind {
@@ -20,6 +21,16 @@ function daysFromNow(n: number) {
   return new Date(Date.now() + n * 86_400_000).toISOString();
 }
 
+// Feed channels: the gym-wide "feed", the "pets" channel, or a per-challenge
+// space keyed "challenge:<uuid>". Anything else falls back to the main feed.
+const UUID_RE = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+function asChannel(v: unknown): string {
+  const s = String(v || "feed");
+  if (s === "pets") return "pets";
+  if (s.startsWith(CHALLENGE_PREFIX) && UUID_RE.test(s.slice(CHALLENGE_PREFIX.length))) return s;
+  return "feed";
+}
+
 export type FormState = { error?: string; ok?: boolean } | undefined;
 
 // ---- Check-in ----------------------------------------------------------
@@ -31,6 +42,7 @@ export async function checkIn(): Promise<{ already: boolean; streak: number; poi
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
   revalidatePath("/dashboard");
   return data as { already: boolean; streak: number; points: number };
 }
@@ -45,6 +57,7 @@ export async function giveKudos(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 // ---- Challenges --------------------------------------------------------
@@ -86,6 +99,7 @@ export async function joinChallenge(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function leaveChallenge(formData: FormData) {
@@ -98,6 +112,7 @@ export async function leaveChallenge(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 // ---- Duels -------------------------------------------------------------
@@ -183,7 +198,7 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
   const imageUrl = String(formData.get("image_url") || "").trim() || null;
   let kind = asKind(formData.get("kind"));
   if (kind === "announcement" && !profile.is_admin) kind = "post"; // only admins broadcast
-  const channel = String(formData.get("channel") || "feed") === "pets" ? "pets" : "feed";
+  const channel = asChannel(formData.get("channel"));
   const tagged = formData.getAll("tagged_ids").map(String).filter((id) => id && id !== profile.id);
 
   if (!body && !imageUrl) return { error: "Write something or add a photo." };
@@ -201,6 +216,7 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
   return { ok: true };
 }
 
@@ -213,6 +229,7 @@ export async function deletePost(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function toggleLike(formData: FormData) {
@@ -231,6 +248,7 @@ export async function toggleLike(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function addComment(formData: FormData) {
@@ -243,6 +261,7 @@ export async function addComment(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function deleteComment(formData: FormData) {
@@ -254,6 +273,7 @@ export async function deleteComment(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function toggleCommentLike(formData: FormData) {
@@ -272,6 +292,7 @@ export async function toggleCommentLike(formData: FormData) {
   revalidatePath("/community");
   revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
+  revalidatePath("/community/challenges/[id]", "page");
 }
 
 export async function joinPartnerGoal(formData: FormData) {
