@@ -68,6 +68,12 @@ export type Database = {
         Update: { contest_id?: string; user_id?: string; joined_at?: string }
         Relationships: []
       }
+      benchmark_records: {
+        Row: { id: string; user_id: string; key: string; value: number; achieved_on: string; note: string | null; created_at: string }
+        Insert: { id?: string; user_id: string; key: string; value: number; achieved_on?: string; note?: string | null; created_at?: string }
+        Update: { id?: string; user_id?: string; key?: string; value?: number; achieved_on?: string; note?: string | null; created_at?: string }
+        Relationships: [{ foreignKeyName: "benchmark_records_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
       client_notes: {
         Row: { trainer_id: string; client_id: string; notes: string | null; tags: string[]; updated_at: string }
         Insert: { trainer_id: string; client_id: string; notes?: string | null; tags?: string[]; updated_at?: string }
@@ -458,6 +464,7 @@ export type Session = Tbl["sessions"]["Row"];
 export type Message = Tbl["messages"]["Row"];
 export type Announcement = Tbl["announcements"]["Row"];
 export type ClientProgress = Tbl["client_progress"]["Row"];
+export type BenchmarkRecord = Tbl["benchmark_records"]["Row"];
 export type Exercise = Tbl["exercises"]["Row"];
 export type WorkoutPlan = Tbl["workout_plans"]["Row"];
 export type WorkoutPlanItem = Tbl["workout_plan_items"]["Row"];

@@ -6,6 +6,7 @@ import { LineChart } from "@/components/LineChart";
 import { MeasurementForm } from "@/components/MeasurementForm";
 import { GoalForm } from "@/components/GoalForm";
 import { deleteGoal, setGoalStatus, updateGoalProgress, deleteMeasurement } from "@/app/(app)/progress/actions";
+import { BenchmarksSection } from "@/components/BenchmarksSection";
 import type { ClientProgress, Goal } from "@/lib/database.types";
 
 function goalPct(g: Goal): number | null {
@@ -135,6 +136,9 @@ export default async function ProgressPage() {
           <MeasurementForm today={today} />
         </div>
       </div>
+
+      {/* Benchmarks & PRs — the powerlifts, row splits, jump rope, mile, etc. */}
+      <BenchmarksSection profile={profile} />
 
       {/* Entry history — every measurement you've logged, newest first */}
       <div className="mt-8">

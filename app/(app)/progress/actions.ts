@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
+import { benchmarkByKey, parseBenchmarkInput } from "@/lib/benchmarks";
 
 export type ProgState = { error?: string; ok?: boolean } | undefined;
 
@@ -108,5 +109,34 @@ export async function deleteMeasurement(formData: FormData) {
   if (!id) return;
   // RLS also restricts this to rows the caller recorded.
   await supabase.from("client_progress").delete().eq("id", id).eq("recorded_by", profile.id);
+  revalidatePath("/progress");
+}
+
+// ---- Benchmarks / PRs --------------------------------------------------
+export async function logBenchmark(formData: FormData): Promise<void> {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const key = String(formData.get("key") || "");
+  const bench = benchmarkByKey(key);
+  if (!bench) return;
+  const value = parseBenchmarkInput(bench.kind, String(formData.get("value") || ""));
+  if (value == null) return;
+  const achievedOn = String(formData.get("achieved_on") || "") || undefined;
+  await supabase.from("benchmark_records").insert({
+    user_id: profile.id,
+    key,
+    value,
+    achieved_on: achievedOn,
+    note: String(formData.get("note") || "").trim() || null,
+  });
+  revalidatePath("/progress");
+}
+
+export async function deleteBenchmark(formData: FormData) {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  await supabase.from("benchmark_records").delete().eq("id", id).eq("user_id", profile.id);
   revalidatePath("/progress");
 }
