@@ -14,6 +14,7 @@ export async function postResponse(formData: FormData) {
   if (!discussionId || !body) return;
   await supabase.from("discussion_responses").insert({ discussion_id: discussionId, user_id: profile.id, body });
   revalidatePath("/topic");
+  revalidatePath("/dashboard");
 }
 
 export async function deleteResponse(formData: FormData) {
@@ -25,6 +26,7 @@ export async function deleteResponse(formData: FormData) {
   if (!profile.is_admin) q.eq("user_id", profile.id);
   await q;
   revalidatePath("/topic");
+  revalidatePath("/dashboard");
 }
 
 export async function toggleResponseLike(formData: FormData) {
@@ -41,6 +43,7 @@ export async function toggleResponseLike(formData: FormData) {
   if (existing) await supabase.from("discussion_response_likes").delete().eq("id", existing.id);
   else await supabase.from("discussion_response_likes").insert({ response_id: responseId, user_id: profile.id });
   revalidatePath("/topic");
+  revalidatePath("/dashboard");
 }
 
 export async function createDiscussion(_prev: TopicState, formData: FormData): Promise<TopicState> {
@@ -52,6 +55,7 @@ export async function createDiscussion(_prev: TopicState, formData: FormData): P
   const { error } = await supabase.from("discussions").insert({ prompt, details, created_by: profile.id, status: "active" });
   if (error) return { error: error.message };
   revalidatePath("/topic");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -66,4 +70,5 @@ export async function concludeDiscussion(formData: FormData) {
     .update({ status: "archived", conclusion, archived_at: new Date().toISOString() })
     .eq("id", id);
   revalidatePath("/topic");
+  revalidatePath("/dashboard");
 }

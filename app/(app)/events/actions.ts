@@ -95,6 +95,7 @@ export async function createEvent(_prev: EventState, formData: FormData): Promis
   if (error) return { error: error.message };
 
   revalidatePath("/events");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -107,6 +108,7 @@ export async function deleteEvent(formData: FormData) {
   if (!profile.is_admin) query.eq("created_by", profile.id);
   await query;
   revalidatePath("/events");
+  revalidatePath("/dashboard");
 }
 
 export async function setRsvp(formData: FormData) {
@@ -124,6 +126,7 @@ export async function setRsvp(formData: FormData) {
       { onConflict: "event_id,user_id" }
     );
   revalidatePath("/events");
+  revalidatePath("/dashboard");
 }
 
 export async function clearRsvp(formData: FormData) {
@@ -133,4 +136,5 @@ export async function clearRsvp(formData: FormData) {
   if (!eventId) return;
   await supabase.from("event_rsvps").delete().eq("event_id", eventId).eq("user_id", profile.id);
   revalidatePath("/events");
+  revalidatePath("/dashboard");
 }

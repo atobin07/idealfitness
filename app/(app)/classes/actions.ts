@@ -38,6 +38,7 @@ export async function createClass(_prev: ClassState, formData: FormData): Promis
   if (error) return { error: error.message };
 
   revalidatePath("/classes");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 
@@ -48,6 +49,7 @@ export async function deleteClass(formData: FormData) {
   if (!id) return;
   await supabase.from("classes").delete().eq("id", id).eq("trainer_id", profile.id);
   revalidatePath("/classes");
+  revalidatePath("/dashboard");
 }
 
 export async function generateSchedule() {
@@ -56,6 +58,7 @@ export async function generateSchedule() {
   const supabase = await createClient();
   await supabase.rpc("generate_class_schedule", { p_days: 14 });
   revalidatePath("/classes");
+  revalidatePath("/dashboard");
   revalidatePath("/calendar");
 }
 
@@ -81,6 +84,7 @@ export async function bookClass(formData: FormData) {
     .upsert({ class_id: classId, client_id: profile.id, status }, { onConflict: "class_id,client_id" });
 
   revalidatePath("/classes");
+  revalidatePath("/dashboard");
   revalidatePath("/calendar");
 }
 
@@ -115,5 +119,6 @@ export async function cancelBooking(formData: FormData) {
   }
 
   revalidatePath("/classes");
+  revalidatePath("/dashboard");
   revalidatePath("/calendar");
 }

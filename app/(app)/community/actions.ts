@@ -29,6 +29,7 @@ export async function checkIn(): Promise<{ already: boolean; streak: number; poi
   const { data, error } = await supabase.rpc("do_checkin");
   if (error) return { error: error.message };
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   revalidatePath("/dashboard");
   return data as { already: boolean; streak: number; points: number };
@@ -42,6 +43,7 @@ export async function giveKudos(formData: FormData) {
   if (!activityId) return;
   await supabase.rpc("give_kudos", { p_activity: activityId });
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -82,6 +84,7 @@ export async function joinChallenge(formData: FormData) {
   await supabase.from("challenge_participants").upsert({ challenge_id: id, user_id: profile.id }, { onConflict: "challenge_id,user_id" });
   revalidatePath("/community/challenges");
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -93,6 +96,7 @@ export async function leaveChallenge(formData: FormData) {
   await supabase.from("challenge_participants").delete().eq("challenge_id", id).eq("user_id", profile.id);
   revalidatePath("/community/challenges");
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -195,6 +199,7 @@ export async function createPost(_prev: FormState, formData: FormData): Promise<
     await supabase.from("post_tags").insert(tagged.map((id) => ({ post_id: post.id, tagged_user_id: id })));
   }
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
   return { ok: true };
 }
@@ -206,6 +211,7 @@ export async function deletePost(formData: FormData) {
   if (!id) return;
   await supabase.from("posts").delete().eq("id", id).eq("author_id", profile.id);
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -223,6 +229,7 @@ export async function toggleLike(formData: FormData) {
   if (existing) await supabase.from("post_likes").delete().eq("id", existing.id);
   else await supabase.from("post_likes").insert({ post_id: postId, user_id: profile.id });
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -234,6 +241,7 @@ export async function addComment(formData: FormData) {
   if (!postId || !body) return;
   await supabase.from("post_comments").insert({ post_id: postId, author_id: profile.id, body });
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -244,6 +252,7 @@ export async function deleteComment(formData: FormData) {
   if (!id) return;
   await supabase.from("post_comments").delete().eq("id", id).eq("author_id", profile.id);
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 
@@ -261,6 +270,7 @@ export async function toggleCommentLike(formData: FormData) {
   if (existing) await supabase.from("comment_likes").delete().eq("id", existing.id);
   else await supabase.from("comment_likes").insert({ comment_id: commentId, user_id: profile.id });
   revalidatePath("/community");
+  revalidatePath("/dashboard");
   revalidatePath("/animal-kingdom");
 }
 

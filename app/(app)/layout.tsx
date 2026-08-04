@@ -31,9 +31,13 @@ export default async function AppLayout({
   const pages: SearchItem[] = [
     { label: "Dashboard", href: "/dashboard", group: "Page" },
     { label: "Calendar", href: "/calendar", group: "Page" },
-    { label: "Classes", href: "/classes", group: "Page" },
+    { label: "Community", href: "/dashboard?tab=community", group: "Page" },
+    { label: "Classes", href: "/dashboard?tab=classes", group: "Page" },
+    { label: "Events", href: "/dashboard?tab=events", group: "Page" },
+    { label: "Hot Topic", href: "/dashboard?tab=topic", group: "Page" },
     { label: "Workouts", href: "/workouts", group: "Page" },
     { label: "Progress & goals", href: "/progress", group: "Page" },
+    { label: "Members", href: "/members", group: "Page" },
     { label: "Messages", href: "/messages", group: "Page" },
     { label: "Billing", href: "/billing", group: "Page" },
     { label: "Announcements", href: "/announcements", group: "Page" },
@@ -74,7 +78,7 @@ export default async function AppLayout({
     .order("starts_at")
     .limit(10);
   for (const c of classes ?? []) {
-    searchItems.push({ label: c.title, href: "/classes", group: "Class" });
+    searchItems.push({ label: c.title, href: "/dashboard?tab=classes", group: "Class" });
   }
 
   return (

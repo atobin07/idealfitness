@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/community", label: "Feed" },
+  { href: "/dashboard?tab=community", label: "Feed" },
   { href: "/community/leaderboard", label: "Leaderboard" },
   { href: "/community/challenges", label: "Challenges" },
   { href: "/community/duels", label: "Duels" },
@@ -16,7 +16,8 @@ export function CommunityTabs() {
   return (
     <div className="mb-6 inline-flex flex-wrap gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
       {TABS.map((t) => {
-        const active = pathname === t.href;
+        // The feed lives on the dashboard; its pathname carries no query string.
+        const active = t.href.startsWith("/dashboard") ? pathname === "/dashboard" : pathname === t.href;
         return (
           <Link
             key={t.href}
