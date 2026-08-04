@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
-import { CheckInCard } from "@/components/community/CheckInCard";
 import { MessagesOverview } from "@/components/hub/MessagesOverview";
 import { MembersOverview } from "@/components/hub/MembersOverview";
 import { dayLabel, timeRange, statusBadge, statusLabel } from "@/lib/format";
@@ -22,31 +21,23 @@ function Stat({ label, value, href }: { label: string; value: string | number; h
   );
 }
 
+/** The "everything else" tab: your numbers, sessions, messages, members, news. */
 export async function OverviewSection({ profile }: { profile: Profile }) {
   const supabase = await createClient();
   const isTrainer = profile.role === "trainer";
   const nowIso = new Date().toISOString();
 
-  const [{ data: upcoming }, { count: unread }, { data: announcements }, { data: nextClass }] =
-    await Promise.all([
-      supabase
-        .from("sessions")
-        .select("*, trainer:trainer_id(id, full_name), client:client_id(id, full_name)")
-        .gte("starts_at", nowIso)
-        .eq("status", "scheduled")
-        .order("starts_at", { ascending: true })
-        .limit(6),
-      supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", profile.id).is("read_at", null),
-      supabase.from("announcements").select("id, title, body, created_at").order("created_at", { ascending: false }).limit(3),
-      supabase.from("classes").select("title, starts_at").gte("starts_at", nowIso).order("starts_at").limit(1).maybeSingle(),
-    ]);
-
-  const { data: myStats } = await supabase
-    .from("member_stats")
-    .select("current_streak, last_checkin_date")
-    .eq("user_id", profile.id)
-    .maybeSingle();
-  const checkedInToday = myStats?.last_checkin_date === new Date().toISOString().slice(0, 10);
+  const [{ data: upcoming }, { count: unread }, { data: announcements }] = await Promise.all([
+    supabase
+      .from("sessions")
+      .select("*, trainer:trainer_id(id, full_name), client:client_id(id, full_name)")
+      .gte("starts_at", nowIso)
+      .eq("status", "scheduled")
+      .order("starts_at", { ascending: true })
+      .limit(6),
+    supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", profile.id).is("read_at", null),
+    supabase.from("announcements").select("id, title, body, created_at").order("created_at", { ascending: false }).limit(3),
+  ]);
 
   const sessions = (upcoming ?? []) as SessionWithPeople[];
 
@@ -123,21 +114,6 @@ export async function OverviewSection({ profile }: { profile: Profile }) {
         </div>
 
         <section className="space-y-6">
-          <CheckInCard checkedInToday={checkedInToday} streak={myStats?.current_streak ?? 0} />
-
-          {nextClass && (
-            <div className="card overflow-hidden">
-              <div className="bg-gradient-to-br from-brand-500 to-brand-700 p-5 text-white">
-                <p className="text-xs font-medium uppercase tracking-wide text-brand-100">Next class</p>
-                <p className="mt-1 text-lg font-bold">{nextClass.title}</p>
-                <p className="text-sm text-brand-100">{dayLabel(new Date(nextClass.starts_at))}</p>
-                <Link href="/dashboard?tab=classes" className="mt-3 inline-block rounded-lg bg-white/20 px-3 py-1.5 text-sm font-medium hover:bg-white/30">
-                  {isTrainer ? "Manage classes" : "I'm in! 💪"}
-                </Link>
-              </div>
-            </div>
-          )}
-
           <div>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-ink-900 dark:text-white">Announcements</h2>
@@ -155,11 +131,9 @@ export async function OverviewSection({ profile }: { profile: Profile }) {
               ))}
             </div>
           </div>
-        </section>
-      </div>
 
-      <div className="mt-8">
-        <MembersOverview />
+          <MembersOverview />
+        </section>
       </div>
     </>
   );

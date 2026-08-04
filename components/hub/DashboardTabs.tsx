@@ -4,23 +4,22 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 const TABS = [
+  { key: "home", label: "Home" },
   { key: "overview", label: "Overview" },
-  { key: "community", label: "Community" },
-  { key: "classes", label: "Classes" },
   { key: "events", label: "Events" },
   { key: "topic", label: "Hot Topic" },
 ];
 
 export function DashboardTabs() {
   const params = useSearchParams();
-  const current = params.get("tab") ?? "overview";
+  const current = params.get("tab") ?? "home";
 
   return (
     <div className="mb-6 -mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
       <div className="inline-flex gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
         {TABS.map((t) => {
           const active = current === t.key;
-          const href = t.key === "overview" ? "/dashboard" : `/dashboard?tab=${t.key}`;
+          const href = t.key === "home" ? "/dashboard" : `/dashboard?tab=${t.key}`;
           return (
             <Link
               key={t.key}

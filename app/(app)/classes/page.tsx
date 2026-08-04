@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-// Classes now live as a tab on the dashboard hub.
+// Classes now lead the main dashboard page.
 export default function ClassesPage() {
-  redirect("/dashboard?tab=classes");
+  redirect("/dashboard");
 }
