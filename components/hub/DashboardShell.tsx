@@ -14,8 +14,11 @@ export function useDashboardTab() {
 
 /**
  * Client-side tab shell. Every panel is rendered once on the server and passed
- * in as `content`; switching tabs just shows/hides — no navigation, no reload,
- * no scroll jump, so the page flows.
+ * in as `content`; switching tabs just shows/hides — no navigation, no reload.
+ *
+ * The tab bar is locked in place (sticky) and each panel keeps a minimum
+ * height, so swapping tabs never collapses the page or moves your scroll —
+ * the interface below the tabs simply changes.
  */
 export function DashboardShell({
   tabs,
@@ -45,31 +48,36 @@ export function DashboardShell({
     <TabContext.Provider value={select}>
       <PageHeader title={title} subtitle={subtitle} />
 
-      <div className="mb-6 -mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
-        <div className="inline-flex gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
-          {tabs.map((t) => {
-            const isActive = t.key === active;
-            return (
-              <button
-                key={t.key}
-                type="button"
-                onClick={() => select(t.key)}
-                aria-pressed={isActive}
-                className={`whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all duration-150 ${
-                  isActive
-                    ? "bg-white text-brand-700 shadow-sm dark:bg-white/10 dark:text-brand-200"
-                    : "text-slate-500 hover:text-ink-900 dark:hover:text-white"
-                }`}
-              >
-                {t.label}
-              </button>
-            );
-          })}
+      {/* Locked tab bar — stays pinned below the top bar while you browse and
+          while you switch tabs. Bleeds to the content edges so panels scroll
+          cleanly underneath it. */}
+      <div className="sticky top-[56px] z-10 -mx-4 mb-6 border-b border-slate-200/70 bg-slate-50/95 px-4 pb-3 pt-1 backdrop-blur dark:border-white/10 dark:bg-ink-900/95 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="-mx-1 flex gap-1 overflow-x-auto px-1">
+          <div className="inline-flex gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
+            {tabs.map((t) => {
+              const isActive = t.key === active;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => select(t.key)}
+                  aria-pressed={isActive}
+                  className={`whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all duration-150 ${
+                    isActive
+                      ? "bg-white text-brand-700 shadow-sm dark:bg-white/10 dark:text-brand-200"
+                      : "text-slate-500 hover:text-ink-900 dark:hover:text-white"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {tabs.map((t) => (
-        <div key={t.key} className={t.key === active ? "" : "hidden"}>
+        <div key={t.key} className={t.key === active ? "min-h-[70vh]" : "hidden"}>
           {t.content}
         </div>
       ))}
