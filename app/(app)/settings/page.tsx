@@ -2,6 +2,7 @@ import { requireProfile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/PageHeader";
 import { ProfileForm } from "@/components/ProfileForm";
+import { PasswordForm } from "@/components/PasswordForm";
 import { MemberProfileForm } from "@/components/MemberProfileForm";
 import { AvatarUploader } from "@/components/AvatarUploader";
 import { AvailabilityEditor } from "@/components/AvailabilityEditor";
@@ -30,6 +31,12 @@ export default async function SettingsPage() {
           <ProfileForm profile={profile} />
         </div>
         {profile.role === "trainer" && <AvailabilityEditor trainerId={profile.id} />}
+      </div>
+
+      <div className="mt-6 card p-6">
+        <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Password</h2>
+        <p className="mb-4 text-sm muted">Change the password you use to sign in.</p>
+        <PasswordForm />
       </div>
 
       <div className="mt-6 card p-6">

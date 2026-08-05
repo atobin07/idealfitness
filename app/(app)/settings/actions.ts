@@ -84,6 +84,27 @@ export async function updateAvatar(formData: FormData) {
   revalidatePath(`/members/${profile.id}`);
 }
 
+export async function changePassword(_prev: ProfileState, formData: FormData): Promise<ProfileState> {
+  const profile = await requireProfile();
+  const supabase = await createClient();
+
+  const current = String(formData.get("current_password") || "");
+  const password = String(formData.get("password") || "");
+  const confirm = String(formData.get("confirm") || "");
+
+  if (password.length < 6) return { error: "New password must be at least 6 characters." };
+  if (password !== confirm) return { error: "New passwords don't match." };
+  if (!profile.email) return { error: "No email on file for this account." };
+
+  // Verify the current password before changing it.
+  const { error: signInErr } = await supabase.auth.signInWithPassword({ email: profile.email, password: current });
+  if (signInErr) return { error: "Current password is incorrect." };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+  return { ok: true };
+}
+
 export async function addAvailability(formData: FormData) {
   const profile = await requireProfile();
   if (profile.role !== "trainer") return;

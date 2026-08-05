@@ -2,10 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/lib/database.types";
 
 export type AuthState = { error?: string; notice?: string } | undefined;
+
+/** Absolute origin of the current request, for building auth redirect URLs. */
+async function siteOrigin(): Promise<string> {
+  const h = await headers();
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const host = h.get("host") ?? "";
+  return `${proto}://${host}`;
+}
 
 export async function signIn(
   _prev: AuthState,
@@ -68,4 +77,53 @@ export async function signOut() {
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
   redirect("/login");
+}
+
+// ---- Magic link (passwordless sign-in) ---------------------------------
+export async function sendMagicLink(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = String(formData.get("email") || "").trim();
+  if (!email) return { error: "Enter your email." };
+  const supabase = await createClient();
+  const origin = await siteOrigin();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: `${origin}/auth/confirm?next=/dashboard` },
+  });
+  if (error) return { error: error.message };
+  return { notice: "Check your email for a one-tap sign-in link." };
+}
+
+// ---- Forgot password: email a reset link -------------------------------
+export async function requestPasswordReset(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = String(formData.get("email") || "").trim();
+  if (!email) return { error: "Enter your email." };
+  const supabase = await createClient();
+  const origin = await siteOrigin();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/confirm?next=/reset`,
+  });
+  // Don't reveal whether an account exists — always confirm.
+  if (error && !/rate limit/i.test(error.message)) {
+    return { notice: "If that email has an account, a reset link is on its way. Check your inbox." };
+  }
+  if (error) return { error: error.message };
+  return { notice: "If that email has an account, a reset link is on its way. Check your inbox." };
+}
+
+// ---- Set a new password (from a reset/recovery session) ----------------
+export async function updatePassword(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const password = String(formData.get("password") || "");
+  const confirm = String(formData.get("confirm") || "");
+  if (password.length < 6) return { error: "Password must be at least 6 characters." };
+  if (password !== confirm) return { error: "Passwords don't match." };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Your reset link has expired. Request a new one from the login page." };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
 }
