@@ -86,6 +86,24 @@ export type Database = {
         Update: { id?: string; contest_id?: string; from_user?: string; to_user?: string; kind?: string; created_at?: string }
         Relationships: []
       }
+      polls: {
+        Row: { id: string; question: string; description: string | null; status: string; allow_multiple: boolean; created_by: string | null; closes_at: string | null; created_at: string }
+        Insert: { id?: string; question: string; description?: string | null; status?: string; allow_multiple?: boolean; created_by?: string | null; closes_at?: string | null; created_at?: string }
+        Update: { id?: string; question?: string; description?: string | null; status?: string; allow_multiple?: boolean; created_by?: string | null; closes_at?: string | null; created_at?: string }
+        Relationships: []
+      }
+      poll_options: {
+        Row: { id: string; poll_id: string; label: string; sort: number; created_at: string }
+        Insert: { id?: string; poll_id: string; label: string; sort?: number; created_at?: string }
+        Update: { id?: string; poll_id?: string; label?: string; sort?: number; created_at?: string }
+        Relationships: [{ foreignKeyName: "poll_options_poll_id_fkey"; columns: ["poll_id"]; isOneToOne: false; referencedRelation: "polls"; referencedColumns: ["id"] }]
+      }
+      poll_votes: {
+        Row: { id: string; poll_id: string; option_id: string; user_id: string; created_at: string }
+        Insert: { id?: string; poll_id: string; option_id: string; user_id: string; created_at?: string }
+        Update: { id?: string; poll_id?: string; option_id?: string; user_id?: string; created_at?: string }
+        Relationships: []
+      }
       benchmark_records: {
         Row: { id: string; user_id: string; key: string; value: number; achieved_on: string; note: string | null; created_at: string }
         Insert: { id?: string; user_id: string; key: string; value: number; achieved_on?: string; note?: string | null; created_at?: string }
@@ -484,6 +502,8 @@ export type Announcement = Tbl["announcements"]["Row"];
 export type ClientProgress = Tbl["client_progress"]["Row"];
 export type BenchmarkRecord = Tbl["benchmark_records"]["Row"];
 export type Contest = Tbl["contests"]["Row"];
+export type Poll = Tbl["polls"]["Row"];
+export type PollOption = Tbl["poll_options"]["Row"];
 export type ContestScore = Tbl["contest_scores"]["Row"];
 export type ContestCheer = Tbl["contest_cheers"]["Row"];
 export type Exercise = Tbl["exercises"]["Row"];

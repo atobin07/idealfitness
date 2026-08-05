@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { TabHub, type HubTab } from "@/components/TabHub";
 import { FeedSection } from "@/components/hub/FeedSection";
+import { PollsSection } from "@/components/feed/PollsSection";
 import { LeaderboardSection } from "@/components/feed/LeaderboardSection";
 import { ChallengesFeedSection } from "@/components/feed/ChallengesFeedSection";
 import { DuelsSection } from "@/components/feed/DuelsSection";
@@ -16,6 +17,7 @@ export default async function FeedPage({
 
   const tabs: HubTab[] = [
     { key: "feed", label: "Feed", content: <FeedSection profile={profile} /> },
+    { key: "polls", label: "Polls", content: <PollsSection profile={profile} /> },
     { key: "leaderboard", label: "Leaderboard", content: <LeaderboardSection profile={profile} /> },
     { key: "challenges", label: "Challenges", content: <ChallengesFeedSection profile={profile} /> },
     { key: "duels", label: "Duels", content: <DuelsSection profile={profile} /> },

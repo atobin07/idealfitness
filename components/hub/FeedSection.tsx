@@ -1,34 +1,63 @@
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
 import { PostFeed, POST_SELECT, type PostRow } from "@/components/community/PostFeed";
+import { PollCard } from "@/components/polls/PollCard";
 import { TabLink } from "@/components/hub/TabLink";
 import type { Profile } from "@/lib/database.types";
+
+type PollRow = {
+  id: string; question: string; description: string | null; status: string; allow_multiple: boolean; closes_at: string | null;
+  poll_options: { id: string; label: string; sort: number }[];
+  poll_votes: { option_id: string; user_id: string }[];
+};
 
 export async function FeedSection({ profile }: { profile: Profile }) {
   const supabase = await createClient();
 
-  const [{ data: postsRaw }, { data: peopleRaw }, { data: board }] = await Promise.all([
+  const [{ data: postsRaw }, { data: peopleRaw }, { data: board }, { data: pollsRaw }] = await Promise.all([
     supabase.from("posts").select(POST_SELECT).eq("channel", "feed").order("created_at", { ascending: false }).limit(40),
     supabase.from("profiles").select("id, full_name").neq("id", profile.id).order("full_name"),
     supabase.from("member_stats").select("user_id, total_points, profile:user_id(full_name, avatar_url)").order("total_points", { ascending: false }).limit(5),
+    supabase.from("polls").select("*, poll_options(id, label, sort), poll_votes(option_id, user_id)").eq("status", "open").order("created_at", { ascending: false }).limit(3),
   ]);
 
   const posts = (postsRaw ?? []) as unknown as PostRow[];
   const people = (peopleRaw ?? []) as { id: string; full_name: string; avatar_url: string | null }[];
   const leaders = (board ?? []) as unknown as { user_id: string; total_points: number; profile: { full_name: string; avatar_url: string | null } | null }[];
 
+  // The freshest still-open poll gets pinned to the top of the feed so it's
+  // the first thing members see — that's how we get great response.
+  const now = Date.now();
+  const featured = ((pollsRaw ?? []) as unknown as PollRow[]).find((p) => !p.closes_at || new Date(p.closes_at).getTime() > now);
+
   return (
     <>
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         {/* Feed column */}
-        <PostFeed
-          posts={posts}
-          people={people}
-          me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }}
-          isAdmin={profile.is_admin}
-          channel="feed"
-          pinAnnouncements
-        />
+        <div className="space-y-5">
+          {featured && (
+            <div>
+              <PollCard
+                poll={{ id: featured.id, question: featured.question, description: featured.description, status: "open", allow_multiple: featured.allow_multiple }}
+                options={[...featured.poll_options].sort((a, b) => a.sort - b.sort)}
+                votes={featured.poll_votes}
+                myId={profile.id}
+                compact
+              />
+              <div className="mt-1 text-right">
+                <TabLink tab="polls" className="text-xs font-semibold text-brand-600 hover:text-brand-700">See all polls →</TabLink>
+              </div>
+            </div>
+          )}
+          <PostFeed
+            posts={posts}
+            people={people}
+            me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }}
+            isAdmin={profile.is_admin}
+            channel="feed"
+            pinAnnouncements
+          />
+        </div>
 
         {/* Right rail */}
         <aside className="hidden space-y-4 self-start lg:sticky lg:top-6 lg:block">
