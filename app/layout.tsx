@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#0a89bb",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 // Set the theme before hydration to avoid a flash of the wrong color scheme.

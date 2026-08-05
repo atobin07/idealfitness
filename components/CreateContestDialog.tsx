@@ -19,7 +19,7 @@ export function CreateContestDialog() {
       <button className="btn-primary" onClick={() => setOpen(true)}>+ Start a contest</button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-lg rounded-t-2xl bg-white p-6 shadow-xl dark:bg-ink-800 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl dark:bg-ink-800 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-ink-900 dark:text-white">Start a gym-wide contest</h2>
               <button onClick={() => setOpen(false)} className="btn-ghost p-1" aria-label="Close">
@@ -43,7 +43,7 @@ export function CreateContestDialog() {
                 <label className="label" htmlFor="ct-rules">📋 Rules</label>
                 <textarea id="ct-rules" name="rules" rows={3} className="input" placeholder="One judged attempt per member. Rule keepers record scores. Ties broken by earliest submission…" />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
                   <label className="label" htmlFor="ct-metric">What&apos;s scored</label>
                   <input id="ct-metric" name="metric" className="input" placeholder="Total reps" />

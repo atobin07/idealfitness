@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileTabBar } from "@/components/MobileTabBar";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -62,9 +63,11 @@ export function AppShell({
         </header>
 
         <main className="flex-1 overflow-x-hidden">
-          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+          <div className="mx-auto max-w-6xl px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-8">{children}</div>
         </main>
       </div>
+
+      {!open && <MobileTabBar onMore={() => setOpen(true)} moreActive={false} />}
     </div>
   );
 }

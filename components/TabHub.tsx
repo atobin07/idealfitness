@@ -55,7 +55,7 @@ export function TabHub({
       {/* Locked tab bar — stays pinned below the top bar while you browse and
           while you switch tabs. Bleeds to the content edges so panels scroll
           cleanly underneath it. */}
-      <div className="sticky top-[56px] z-10 -mx-4 mb-6 border-b border-slate-200/70 bg-slate-50/95 px-4 pb-3 pt-1 backdrop-blur dark:border-white/10 dark:bg-ink-900/95 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <div className="sticky top-[60px] z-10 -mx-4 mb-6 border-b border-slate-200/70 bg-slate-50/95 px-4 pb-3 pt-1 backdrop-blur dark:border-white/10 dark:bg-ink-900/95 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
         <div className="-mx-1 flex gap-1 overflow-x-auto px-1">
           <div className="inline-flex gap-1 rounded-2xl bg-slate-100/80 p-1 shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)] dark:bg-white/5">
             {tabs.map((t) => {

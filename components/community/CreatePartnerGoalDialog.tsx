@@ -21,7 +21,7 @@ export function CreatePartnerGoalDialog({ people }: { people: Person[] }) {
       <button className="btn-primary" onClick={() => setOpen(true)}>+ New partner goal</button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-md rounded-t-2xl bg-white p-6 shadow-xl dark:bg-ink-800 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl dark:bg-ink-800 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-ink-900 dark:text-white">Set a shared goal</h2>
               <button onClick={() => setOpen(false)} className="btn-ghost p-1" aria-label="Close">
