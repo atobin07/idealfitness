@@ -1,16 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 
 export type HubTab = { key: string; label: string; content: React.ReactNode };
-
-const TabContext = createContext<(key: string) => void>(() => {});
-
-/** Lets in-panel controls switch tabs without navigating. */
-export function useHubTab() {
-  return useContext(TabContext);
-}
 
 /**
  * A page with a locked tab bar. An optional persistent `top` section stays put
@@ -47,7 +40,7 @@ export function TabHub({
   }
 
   return (
-    <TabContext.Provider value={select}>
+    <>
       <PageHeader title={title} subtitle={subtitle} />
 
       {top && <div className="mb-6">{top}</div>}
@@ -85,6 +78,6 @@ export function TabHub({
           {t.content}
         </div>
       ))}
-    </TabContext.Provider>
+    </>
   );
 }
