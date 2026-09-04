@@ -1,27 +1,25 @@
 import { requireProfile } from "@/lib/auth";
 import { TabHub, type HubTab } from "@/components/TabHub";
-import { FeedSection } from "@/components/hub/FeedSection";
-import { PollsSection } from "@/components/feed/PollsSection";
+import { UnifiedFeedSection } from "@/components/feed/UnifiedFeedSection";
 import { LeaderboardSection } from "@/components/feed/LeaderboardSection";
-import { ChallengesFeedSection } from "@/components/feed/ChallengesFeedSection";
-import { DuelsSection } from "@/components/feed/DuelsSection";
-import { PartnerGoalsSection } from "@/components/feed/PartnerGoalsSection";
+import type { FeedFilter } from "@/lib/feed/types";
+
+const VALID_FILTERS: FeedFilter[] = ["all", "post", "poll", "challenge", "duel", "partner_goal", "activity"];
+function asFilter(v: string | undefined): FeedFilter | undefined {
+  return VALID_FILTERS.includes(v as FeedFilter) ? (v as FeedFilter) : undefined;
+}
 
 export default async function FeedPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; filter?: string }>;
 }) {
-  const { tab } = await searchParams;
+  const { tab, filter } = await searchParams;
   const profile = await requireProfile();
 
   const tabs: HubTab[] = [
-    { key: "feed", label: "Feed", content: <FeedSection profile={profile} /> },
-    { key: "polls", label: "Polls", content: <PollsSection profile={profile} /> },
+    { key: "feed", label: "Feed", content: <UnifiedFeedSection profile={profile} initialFilter={asFilter(filter)} /> },
     { key: "leaderboard", label: "Leaderboard", content: <LeaderboardSection profile={profile} /> },
-    { key: "challenges", label: "Challenges", content: <ChallengesFeedSection profile={profile} /> },
-    { key: "duels", label: "Duels", content: <DuelsSection profile={profile} /> },
-    { key: "goals", label: "Partner goals", content: <PartnerGoalsSection profile={profile} /> },
   ];
 
   return (
@@ -30,7 +28,7 @@ export default async function FeedPage({
       initial={tab ?? "feed"}
       basePath="/feed"
       title="Community"
-      subtitle="Share wins, climb the board, and take on challenges, duels and partner goals."
+      subtitle="One feed for posts, polls, challenges, duels and partner goals — filter to find what matters."
     />
   );
 }
