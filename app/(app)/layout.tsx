@@ -33,12 +33,7 @@ export default async function AppLayout({
     { label: "Calendar", href: "/calendar", group: "Page" },
     { label: "Community", href: "/feed", group: "Page" },
     { label: "Leaderboard", href: "/feed?tab=leaderboard", group: "Page" },
-    { label: "Challenges", href: "/feed?tab=challenges", group: "Page" },
-    { label: "Duels", href: "/feed?tab=duels", group: "Page" },
-    { label: "Partner goals", href: "/feed?tab=goals", group: "Page" },
-    { label: "Classes", href: "/dashboard?tab=classes", group: "Page" },
-    { label: "Events", href: "/dashboard?tab=events", group: "Page" },
-    { label: "Hot Topic", href: "/dashboard?tab=topic", group: "Page" },
+    { label: "Challenges", href: "/feed?filter=challenge", group: "Page" },
     { label: "Workouts", href: "/workouts", group: "Page" },
     { label: "Progress & goals", href: "/progress", group: "Page" },
     { label: "Members", href: "/members", group: "Page" },
@@ -82,7 +77,7 @@ export default async function AppLayout({
     .order("starts_at")
     .limit(10);
   for (const c of classes ?? []) {
-    searchItems.push({ label: c.title, href: "/dashboard?tab=classes", group: "Class" });
+    searchItems.push({ label: c.title, href: "/calendar", group: "Class" });
   }
 
   return (

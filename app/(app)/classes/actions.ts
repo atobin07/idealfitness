@@ -4,64 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireProfile } from "@/lib/auth";
 
-export type ClassState = { error?: string; ok?: boolean } | undefined;
-
-export async function createClass(_prev: ClassState, formData: FormData): Promise<ClassState> {
-  const profile = await requireProfile();
-  if (profile.role !== "trainer") return { error: "Only trainers can create classes." };
-  const supabase = await createClient();
-
-  const title = String(formData.get("title") || "").trim();
-  const description = String(formData.get("description") || "").trim();
-  const date = String(formData.get("date") || "");
-  const time = String(formData.get("time") || "");
-  const duration = parseInt(String(formData.get("duration") || "60"), 10);
-  const capacity = parseInt(String(formData.get("capacity") || "10"), 10);
-  const location = String(formData.get("location") || "").trim();
-
-  if (!title) return { error: "Add a class title." };
-  if (!date || !time) return { error: "Pick a date and time." };
-
-  const starts = new Date(`${date}T${time}`);
-  if (Number.isNaN(starts.getTime())) return { error: "Invalid date or time." };
-  const ends = new Date(starts.getTime() + duration * 60_000);
-
-  const { error } = await supabase.from("classes").insert({
-    trainer_id: profile.id,
-    title,
-    description: description || null,
-    starts_at: starts.toISOString(),
-    ends_at: ends.toISOString(),
-    capacity,
-    location: location || null,
-  });
-  if (error) return { error: error.message };
-
-  revalidatePath("/classes");
-  revalidatePath("/dashboard");
-  return { ok: true };
-}
-
-export async function deleteClass(formData: FormData) {
-  const profile = await requireProfile();
-  const supabase = await createClient();
-  const id = String(formData.get("id") || "");
-  if (!id) return;
-  await supabase.from("classes").delete().eq("id", id).eq("trainer_id", profile.id);
-  revalidatePath("/classes");
-  revalidatePath("/dashboard");
-}
-
-export async function generateSchedule() {
-  const profile = await requireProfile();
-  if (profile.role !== "trainer" && !profile.is_admin) return;
-  const supabase = await createClient();
-  await supabase.rpc("generate_class_schedule", { p_days: 14 });
-  revalidatePath("/classes");
-  revalidatePath("/dashboard");
-  revalidatePath("/calendar");
-}
-
 export async function bookClass(formData: FormData) {
   const profile = await requireProfile();
   const supabase = await createClient();
@@ -83,9 +25,8 @@ export async function bookClass(formData: FormData) {
     .from("class_bookings")
     .upsert({ class_id: classId, client_id: profile.id, status }, { onConflict: "class_id,client_id" });
 
-  revalidatePath("/classes");
-  revalidatePath("/dashboard");
   revalidatePath("/calendar");
+  revalidatePath("/dashboard");
 }
 
 export async function cancelBooking(formData: FormData) {
@@ -118,7 +59,6 @@ export async function cancelBooking(formData: FormData) {
     }
   }
 
-  revalidatePath("/classes");
-  revalidatePath("/dashboard");
   revalidatePath("/calendar");
+  revalidatePath("/dashboard");
 }

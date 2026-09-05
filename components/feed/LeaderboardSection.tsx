@@ -1,14 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/Avatar";
-import { giveKudos } from "@/app/(app)/community/actions";
-import { relativeTime } from "@/lib/format";
 import type { Profile } from "@/lib/database.types";
 
 const BADGE_EMOJI: Record<string, string> = {
   flag: "🚩", calendar: "📅", fire: "🔥", dumbbell: "🏋️", bolt: "⚡", star: "⭐", trophy: "🏆",
-};
-const ACTIVITY_EMOJI: Record<string, string> = {
-  checkin: "📍", session: "💪", workout: "🏋️", badge: "🏅", duel: "⚔️", challenge: "🏆", event: "📅",
 };
 
 function levelProgress(points: number) {
@@ -19,30 +14,17 @@ function levelProgress(points: number) {
 export async function LeaderboardSection({ profile }: { profile: Profile }) {
   const supabase = await createClient();
 
-  const [{ data: myStats }, { data: badges }, { data: myBadges }, { data: board }, { data: feedRaw }] = await Promise.all([
+  const [{ data: myStats }, { data: badges }, { data: myBadges }, { data: board }] = await Promise.all([
     supabase.from("member_stats").select("*").eq("user_id", profile.id).maybeSingle(),
     supabase.from("badges").select("*").order("sort"),
     supabase.from("member_badges").select("badge_id").eq("user_id", profile.id),
     supabase.from("member_stats").select("user_id, total_points, level, current_streak, profile:user_id(full_name)").order("total_points", { ascending: false }),
-    supabase.from("activity_events").select("*, profile:user_id(full_name)").order("created_at", { ascending: false }).limit(25),
   ]);
 
   const stats = myStats ?? { total_points: 0, level: 1, current_streak: 0, longest_streak: 0, last_checkin_date: null, checkins_count: 0 };
   const earned = new Set((myBadges ?? []).map((b) => b.badge_id));
   const leaderboard = (board ?? []) as unknown as { user_id: string; total_points: number; level: number; current_streak: number; profile: { full_name: string } | null }[];
   const myRank = leaderboard.findIndex((r) => r.user_id === profile.id) + 1;
-
-  const feed = (feedRaw ?? []) as unknown as { id: string; user_id: string; type: string; title: string; body: string | null; created_at: string; profile: { full_name: string } | null }[];
-  const feedIds = feed.map((f) => f.id);
-  const kudosCount = new Map<string, number>();
-  const myKudos = new Set<string>();
-  if (feedIds.length > 0) {
-    const { data: k } = await supabase.from("kudos").select("activity_id, user_id").in("activity_id", feedIds);
-    for (const row of k ?? []) {
-      kudosCount.set(row.activity_id, (kudosCount.get(row.activity_id) ?? 0) + 1);
-      if (row.user_id === profile.id) myKudos.add(row.activity_id);
-    }
-  }
 
   const tiles = [
     { label: "Points", value: stats.total_points.toLocaleString(), hint: `Level ${stats.level}` },
@@ -116,41 +98,6 @@ export async function LeaderboardSection({ profile }: { profile: Profile }) {
               );
             })}
           </div>
-        </div>
-      </div>
-
-      {/* Activity feed */}
-      <div className="card p-5">
-        <h2 className="mb-3 font-semibold text-ink-900 dark:text-white">Activity feed</h2>
-        {feed.length === 0 && <p className="text-sm muted">No activity yet. Check in to get things started.</p>}
-        <div className="divide-rows">
-          {feed.map((a) => {
-            const mine = myKudos.has(a.id);
-            const count = kudosCount.get(a.id) ?? 0;
-            return (
-              <div key={a.id} className="flex items-start gap-3 py-3">
-                <span className="mt-0.5 text-xl">{ACTIVITY_EMOJI[a.type] ?? "•"}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-ink-900 dark:text-white">
-                    <span className="font-semibold">{a.profile?.full_name || "A member"}</span> · {a.title}
-                  </p>
-                  {a.body && <p className="text-sm muted">{a.body}</p>}
-                  <p className="text-xs muted">{relativeTime(a.created_at)}</p>
-                </div>
-                {a.user_id !== profile.id && (
-                  <form action={giveKudos}>
-                    <input type="hidden" name="activity_id" value={a.id} />
-                    <button className={`flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium ${mine ? "border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300" : "border-slate-200 text-slate-600 hover:border-brand-300 hover:text-brand-600 dark:border-white/10 dark:text-slate-300"}`}>
-                      👏 {count > 0 ? count : ""}
-                    </button>
-                  </form>
-                )}
-                {a.user_id === profile.id && count > 0 && (
-                  <span className="rounded-full border border-slate-200 px-3 py-1 text-xs muted dark:border-white/10">👏 {count}</span>
-                )}
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>
