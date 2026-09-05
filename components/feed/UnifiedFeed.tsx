@@ -3,14 +3,8 @@
 import { useMemo, useState } from "react";
 import { PostComposer } from "@/components/community/PostComposer";
 import { PostCard, FLOAT_CARD, type Person } from "@/components/community/PostCard";
-import { PollCard } from "@/components/polls/PollCard";
-import { CreatePollDialog } from "@/components/polls/CreatePollDialog";
 import { CreateChallengeDialog } from "@/components/community/CreateChallengeDialog";
-import { CreateDuelDialog } from "@/components/community/CreateDuelDialog";
-import { CreatePartnerGoalDialog } from "@/components/community/CreatePartnerGoalDialog";
 import { ChallengeFeedCard } from "@/components/feed/cards/ChallengeFeedCard";
-import { DuelFeedCard } from "@/components/feed/cards/DuelFeedCard";
-import { PartnerGoalFeedCard } from "@/components/feed/cards/PartnerGoalFeedCard";
 import { ActivityFeedCard } from "@/components/feed/cards/ActivityFeedCard";
 import { FEED_FILTERS, type FeedFilter, type FeedItem } from "@/lib/feed/types";
 
@@ -51,10 +45,7 @@ export function UnifiedFeed({
       <PostComposer people={people} myId={me.id} myName={me.full_name} myAvatar={me.avatar_url} isAdmin={isAdmin} channel="feed" />
 
       <div className="flex flex-wrap gap-2">
-        {isAdmin && <CreatePollDialog />}
         <CreateChallengeDialog />
-        <CreateDuelDialog people={people} />
-        <CreatePartnerGoalDialog people={people} />
       </div>
 
       <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
@@ -87,23 +78,8 @@ export function UnifiedFeed({
         switch (item.kind) {
           case "post":
             return <PostCard key={item.id} post={item.post} me={me} isAdmin={isAdmin} />;
-          case "poll":
-            return (
-              <PollCard
-                key={item.id}
-                poll={{ id: item.poll.id, question: item.poll.question, description: item.poll.description, status: item.poll.status, allow_multiple: item.poll.allow_multiple }}
-                options={item.poll.options}
-                votes={item.poll.votes}
-                myId={me.id}
-                canManage={isAdmin}
-              />
-            );
           case "challenge":
             return <ChallengeFeedCard key={item.id} challenge={item.challenge} myId={me.id} />;
-          case "duel":
-            return <DuelFeedCard key={item.id} duel={item.duel} myId={me.id} />;
-          case "partner_goal":
-            return <PartnerGoalFeedCard key={item.id} goal={item.goal} myId={me.id} />;
           case "activity":
             return <ActivityFeedCard key={item.id} activity={item.activity} myId={me.id} />;
           default:

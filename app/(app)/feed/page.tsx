@@ -4,7 +4,7 @@ import { UnifiedFeedSection } from "@/components/feed/UnifiedFeedSection";
 import { LeaderboardSection } from "@/components/feed/LeaderboardSection";
 import type { FeedFilter } from "@/lib/feed/types";
 
-const VALID_FILTERS: FeedFilter[] = ["all", "post", "poll", "challenge", "duel", "partner_goal", "activity"];
+const VALID_FILTERS: FeedFilter[] = ["all", "post", "challenge", "activity"];
 function asFilter(v: string | undefined): FeedFilter | undefined {
   return VALID_FILTERS.includes(v as FeedFilter) ? (v as FeedFilter) : undefined;
 }
@@ -28,7 +28,7 @@ export default async function FeedPage({
       initial={tab ?? "feed"}
       basePath="/feed"
       title="Community"
-      subtitle="One feed for posts, polls, challenges, duels and partner goals — filter to find what matters."
+      subtitle="One feed for posts, challenges and activity — filter to find what matters."
     />
   );
 }
