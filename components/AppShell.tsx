@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import type { Notification, UserRole } from "@/lib/database.types";
 
 export function AppShell({
@@ -61,7 +62,12 @@ export function AppShell({
         </main>
       </div>
 
-      {!open && <MobileTabBar onMore={() => setOpen(true)} moreActive={false} />}
+      {!open && (
+        <>
+          <InstallPrompt />
+          <MobileTabBar onMore={() => setOpen(true)} moreActive={false} />
+        </>
+      )}
     </div>
   );
 }

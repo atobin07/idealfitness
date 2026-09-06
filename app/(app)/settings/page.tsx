@@ -6,6 +6,7 @@ import { PasswordForm } from "@/components/PasswordForm";
 import { MemberProfileForm } from "@/components/MemberProfileForm";
 import { AvatarUploader } from "@/components/AvatarUploader";
 import { AvailabilityEditor } from "@/components/AvailabilityEditor";
+import { PushNotificationsToggle } from "@/components/PushNotificationsToggle";
 import type { MemberProfile } from "@/lib/database.types";
 
 export default async function SettingsPage() {
@@ -31,6 +32,12 @@ export default async function SettingsPage() {
           <ProfileForm profile={profile} />
         </div>
         {profile.role === "trainer" && <AvailabilityEditor trainerId={profile.id} />}
+      </div>
+
+      <div className="mt-6 card p-6">
+        <h2 className="mb-1 font-semibold text-ink-900 dark:text-white">Notifications</h2>
+        <p className="mb-4 text-sm muted">Choose whether this device gets push notifications.</p>
+        <PushNotificationsToggle />
       </div>
 
       <div className="mt-6 card p-6">

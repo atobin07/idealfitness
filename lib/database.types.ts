@@ -173,6 +173,12 @@ export type Database = {
         Update: { body?: string | null; created_at?: string; id?: string; link?: string | null; read_at?: string | null; title?: string; type?: string; user_id?: string }
         Relationships: [{ foreignKeyName: "notifications_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
       }
+      push_subscriptions: {
+        Row: { id: string; user_id: string; endpoint: string; p256dh: string; auth: string; user_agent: string | null; created_at: string }
+        Insert: { id?: string; user_id: string; endpoint: string; p256dh: string; auth: string; user_agent?: string | null; created_at?: string }
+        Update: { id?: string; user_id?: string; endpoint?: string; p256dh?: string; auth?: string; user_agent?: string | null; created_at?: string }
+        Relationships: [{ foreignKeyName: "push_subscriptions_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] }]
+      }
       packages: {
         Row: { active: boolean; created_at: string; description: string | null; id: string; name: string; price_cents: number; sessions_count: number; trainer_id: string }
         Insert: { active?: boolean; created_at?: string; description?: string | null; id?: string; name: string; price_cents?: number; sessions_count?: number; trainer_id: string }
