@@ -5,9 +5,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { GlobalSearch } from "@/components/GlobalSearch";
 import type { Notification, UserRole } from "@/lib/database.types";
-import type { SearchItem } from "@/components/GlobalSearch";
 
 export function AppShell({
   role,
@@ -16,7 +14,6 @@ export function AppShell({
   unread,
   isAdmin,
   notifications,
-  searchItems,
   children,
 }: {
   role: UserRole;
@@ -25,7 +22,6 @@ export function AppShell({
   unread: number;
   isAdmin: boolean;
   notifications: Notification[];
-  searchItems: SearchItem[];
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -55,9 +51,7 @@ export function AppShell({
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <div className="flex-1">
-            <GlobalSearch items={searchItems} />
-          </div>
+          <div className="flex-1" />
           <NotificationBell userId={userId} initial={notifications} />
           <ThemeToggle />
         </header>
